@@ -18,10 +18,10 @@ class ResidualBlock(nn.Module):
         return x + x_in
 
 
-class SSCNN(nn.Module):
+class GenerativeResnet(nn.Module):
     
     def __init__(self, input_channels=1):
-        super(SSCNN, self).__init__()
+        super(GenerativeResnet, self).__init__()
         self.conv1 = nn.Conv2d(input_channels, 32, kernel_size=9, stride=1, padding=4)
         self.bn1 = nn.BatchNorm2d(32)
         
