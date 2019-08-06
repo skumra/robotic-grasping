@@ -1,13 +1,14 @@
 import argparse
 import logging
+
+import matplotlib.pyplot as plt
 import numpy as np
 import torch.utils.data
-import matplotlib.pyplot as plt
 
 from camera import RealSenseCamera
 from post_process import post_process_output
 from utils.data.camera_data import CameraData
-from utils.dataset_processing import evaluation, grasp
+from utils.dataset_processing import evaluation
 
 logging.basicConfig(level=logging.INFO)
 
