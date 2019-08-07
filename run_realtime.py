@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch.utils.data
 
-from camera import RealSenseCamera
+from interfaces.camera import RealSenseCamera
 from post_process import post_process_output
 from utils.data.camera_data import CameraData
 from utils.dataset_processing import evaluation

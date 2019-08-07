@@ -44,6 +44,8 @@ class CameraData:
         return rgb_img.img
 
     def get_data(self, rgb=None, depth=None):
+        depth_img = None
+        rgb_img = None
         # Load the depth image
         if self.include_depth:
             depth_img = self.get_depth(img=depth)
