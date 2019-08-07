@@ -8,3 +8,4 @@ torchvision
 torchsummary
 tensorboardX
 pyrealsense2
+PIL
