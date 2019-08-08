@@ -17,7 +17,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate network')
     parser.add_argument('--network', type=str, default='output/models/190806_2139_cornell_d/epoch_22_iou_0.94', help='Path to saved network to evaluate')
     parser.add_argument('--path', type=str, default='cornell/01/pcd0100r.png', help='Image path')
-    parser.add_argument('--use-depth', type=int, default=1, help='Use Depth image for evaluation (0/1)')
+    parser.add_argument('--use-depth', type=int, default=0, help='Use Depth image for evaluation (0/1)')
     parser.add_argument('--use-rgb', type=int, default=1, help='Use RGB image for evaluation (1/0)')
     parser.add_argument('--n-grasps', type=int, default=1, help='Number of grasps to consider per image')
 
@@ -37,12 +37,11 @@ if __name__ == '__main__':
 
     # Load image
     pic = Image.open(args.path, 'r')
-    rgb = np.array(pic).transpose((2, 0, 1))
-    depth = np.expand_dims(rgb[0], axis=0)
-    print(depth.shape)
+    rgb = np.array(pic)
+
     img_data = CameraData(include_depth=args.use_depth, include_rgb=args.use_rgb)
 
-    x, depth_img, rgb_img = img_data.get_data(rgb=rgb, depth=depth)
+    x, depth_img, rgb_img = img_data.get_data(rgb=rgb)
 
     fig = plt.figure(figsize=(10, 10))
 
@@ -50,10 +49,9 @@ if __name__ == '__main__':
         xc = x.to(device)
         pred = net.predict(xc)
 
-        q_img, ang_img, width_img = post_process_output(pred['pos'], pred['cos'],
-                                                    pred['sin'], pred['width'])
+        q_img, ang_img, width_img = post_process_output(pred['pos'], pred['cos'], pred['sin'], pred['width'])
 
-        evaluation.plot_output(fig, img_data.get_rgb(rgb, False), np.squeeze(depth_img), q_img, ang_img,
+        evaluation.plot_output(fig=fig, rgb_img=img_data.get_rgb(rgb, False), grasp_q_img=q_img, grasp_angle_img=ang_img,
                                no_grasps=args.n_grasps, grasp_width_img=width_img)
         fig.savefig('img_result.pdf')
 

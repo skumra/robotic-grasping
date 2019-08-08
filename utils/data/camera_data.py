@@ -65,6 +65,6 @@ class CameraData:
         elif self.include_depth:
             x = self.numpy_to_torch(depth_img)
         elif self.include_rgb:
-            x = self.numpy_to_torch(rgb_img)
+            x = self.numpy_to_torch(np.expand_dims(rgb_img, 0))
 
         return x, depth_img, rgb_img
