@@ -321,7 +321,7 @@ class GraspRectangle:
             return
         self.points *= factor
 
-    def plot(self, ax, color=None):
+    def plot(self, ax, q, color=None):
         """
         Plot grasping rectangle.
         :param ax: Existing matplotlib axis
@@ -329,6 +329,7 @@ class GraspRectangle:
         """
         points = np.vstack((self.points, self.points[0]))
         ax.plot(points[:, 1], points[:, 0], color=color)
+        ax.legend(['score: ' + str(q)])
 
     def zoom(self, factor, center):
         """
@@ -350,9 +351,10 @@ class Grasp:
     """
     A Grasp represented by a center pixel, rotation angle and gripper width (length)
     """
-    def __init__(self, center, angle, length=60, width=30):
+    def __init__(self, center, angle, quality, length=60, width=30):
         self.center = center
         self.angle = angle  # Positive angle means rotate anti-clockwise from horizontal.
+        self.quality = quality
         self.length = length
         self.width = width
 
@@ -398,7 +400,7 @@ class Grasp:
         :param ax: Existing matplotlib axis
         :param color: (optional) color
         """
-        self.as_gr.plot(ax, color)
+        self.as_gr.plot(ax, self.quality, color)
 
     def to_jacquard(self, scale=1):
         """
@@ -426,8 +428,9 @@ def detect_grasps(q_img, ang_img, width_img=None, no_grasps=1):
         grasp_point = tuple(grasp_point_array)
 
         grasp_angle = ang_img[grasp_point]
+        grasp_quality = q_img[grasp_point]
 
-        g = Grasp(grasp_point, grasp_angle)
+        g = Grasp(grasp_point, grasp_angle, grasp_quality)
         if width_img is not None:
             g.length = width_img[grasp_point]
             g.width = g.length/2
