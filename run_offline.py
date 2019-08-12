@@ -8,8 +8,7 @@ from PIL import Image
 
 from post_process import post_process_output
 from utils.data.camera_data import CameraData
-from utils.dataset_processing import evaluation
-
+from utils.visualisation.plot import plot_results
 logging.basicConfig(level=logging.INFO)
 
 
@@ -51,7 +50,7 @@ if __name__ == '__main__':
 
         q_img, ang_img, width_img = post_process_output(pred['pos'], pred['cos'], pred['sin'], pred['width'])
 
-        evaluation.plot_output(fig=fig, rgb_img=img_data.get_rgb(rgb, False), grasp_q_img=q_img, grasp_angle_img=ang_img,
-                               no_grasps=args.n_grasps, grasp_width_img=width_img)
+        plot_results(fig=fig, rgb_img=img_data.get_rgb(rgb, False), grasp_q_img=q_img, grasp_angle_img=ang_img,
+                     no_grasps=args.n_grasps, grasp_width_img=width_img)
         fig.savefig('img_result.pdf')
 
