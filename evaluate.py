@@ -6,6 +6,7 @@ import torch.utils.data
 from post_process import post_process_output
 from utils.data import get_dataset
 from utils.dataset_processing import evaluation, grasp
+from utils.visualisation.plot import plot_results, save_results
 
 logging.basicConfig(level=logging.INFO)
 
@@ -98,14 +99,19 @@ if __name__ == '__main__':
                         f.write(g.to_jacquard(scale=1024 / 300) + '\n')
 
             if args.vis:
-                evaluation.plot_output(test_data.dataset.get_rgb(didx, rot, zoom, normalise=False),
-                                       test_data.dataset.get_depth(didx, rot, zoom), q_img,
-                                       ang_img, no_grasps=args.n_grasps, grasp_width_img=width_img)
+                save_results(
+                    rgb_img=test_data.dataset.get_rgb(didx, rot, zoom, normalise=False),
+                    depth_img=test_data.dataset.get_depth(didx, rot, zoom),
+                    grasp_q_img=q_img,
+                    grasp_angle_img=ang_img,
+                    no_grasps=args.n_grasps,
+                    grasp_width_img=width_img
+                )
 
     if args.iou_eval:
         logging.info('IOU Results: %d/%d = %f' % (results['correct'],
-                              results['correct'] + results['failed'],
-                              results['correct'] / (results['correct'] + results['failed'])))
+                                                  results['correct'] + results['failed'],
+                                                  results['correct'] / (results['correct'] + results['failed'])))
 
     if args.jacquard_output:
         logging.info('Jacquard output saved to {}'.format(jo_fn))
