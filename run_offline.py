@@ -63,8 +63,10 @@ if __name__ == '__main__':
             )
         else:
             fig = plt.figure(figsize=(10, 10))
-
-            plot_results(fig=fig, rgb_img=img_data.get_rgb(rgb, False), grasp_q_img=q_img, grasp_angle_img=ang_img,
-                         no_grasps=args.n_grasps, grasp_width_img=width_img)
+            plot_results(fig=fig,
+                         rgb_img=img_data.get_rgb(rgb, False),
+                         grasp_q_img=q_img,
+                         grasp_angle_img=ang_img,
+                         no_grasps=args.n_grasps,
+                         grasp_width_img=width_img)
             fig.savefig('img_result.pdf')
-
