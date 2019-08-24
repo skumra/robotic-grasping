@@ -8,7 +8,15 @@ from utils.dataset_processing.grasp import detect_grasps
 warnings.filterwarnings("ignore")
 
 
-def plot_results(fig, rgb_img, grasp_q_img, grasp_angle_img, depth_img=None, no_grasps=1, grasp_width_img=None):
+def plot_results(
+        fig,
+        rgb_img,
+        grasp_q_img,
+        grasp_angle_img,
+        depth_img=None,
+        no_grasps=1,
+        grasp_width_img=None
+):
     """
     Plot the output of a network
     :param fig: Figure to plot the output
@@ -61,6 +69,40 @@ def plot_results(fig, rgb_img, grasp_q_img, grasp_angle_img, depth_img=None, no_
     ax.set_title('Width')
     ax.axis('off')
     plt.colorbar(plot)
+
+    plt.pause(0.1)
+    fig.canvas.draw()
+
+
+def plot_grasp(
+        fig,
+        rgb_img,
+        grasp_q_img=None,
+        grasp_angle_img=None,
+        no_grasps=1,
+        grasp_width_img=None
+):
+    """
+    Plot the output grasp of a network
+    :param fig: Figure to plot the output
+    :param rgb_img: RGB Image
+    :param grasp_q_img: Q output of network
+    :param grasp_angle_img: Angle output of network
+    :param no_grasps: Maximum number of grasps to plot
+    :param grasp_width_img: (optional) Width output of network
+    :return:
+    """
+    gs = detect_grasps(grasp_q_img, grasp_angle_img, width_img=grasp_width_img, no_grasps=no_grasps)
+
+    plt.ion()
+    plt.clf()
+
+    ax = plt.subplot(111)
+    ax.imshow(rgb_img)
+    for g in gs:
+        g.plot(ax)
+    ax.set_title('Grasp')
+    ax.axis('off')
 
     plt.pause(0.1)
     fig.canvas.draw()

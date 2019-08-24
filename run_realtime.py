@@ -8,7 +8,7 @@ import torch.utils.data
 from interfaces.camera import RealSenseCamera
 from post_process import post_process_output
 from utils.data.camera_data import CameraData
-from utils.dataset_processing import evaluation
+from utils.visualisation.plot import save_results, plot_grasp
 
 logging.basicConfig(level=logging.INFO)
 
@@ -40,19 +40,31 @@ if __name__ == '__main__':
 
     logging.info('Done')
 
-    fig = plt.figure(figsize=(10, 10))
-    while True:
-        image_bundle = cam.get_image_bundle()
-        rgb = image_bundle['rgb']
-        depth = image_bundle['aligned_depth']
-        x, depth_img, rgb_img = cam_data.get_data(rgb=rgb, depth=depth)
-        with torch.no_grad():
-            xc = x.to(device)
-            pred = net.predict(xc)
+    try:
+        fig = plt.figure(figsize=(10, 10))
+        while True:
+            image_bundle = cam.get_image_bundle()
+            rgb = image_bundle['rgb']
+            depth = image_bundle['aligned_depth']
+            x, depth_img, rgb_img = cam_data.get_data(rgb=rgb, depth=depth)
+            with torch.no_grad():
+                xc = x.to(device)
+                pred = net.predict(xc)
 
-            q_img, ang_img, width_img = post_process_output(pred['pos'], pred['cos'],
-                                                        pred['sin'], pred['width'])
+                q_img, ang_img, width_img = post_process_output(pred['pos'], pred['cos'], pred['sin'], pred['width'])
 
-            evaluation.plot_output(fig, cam_data.get_rgb(rgb, False), np.squeeze(depth_img), q_img, ang_img,
-                                   no_grasps=args.n_grasps, grasp_width_img=width_img)
-
+                plot_grasp(fig=fig,
+                           rgb_img=cam_data.get_rgb(rgb, False),
+                           grasp_q_img=q_img,
+                           grasp_angle_img=ang_img,
+                           no_grasps=args.n_grasps,
+                           grasp_width_img=width_img)
+    finally:
+        save_results(
+            rgb_img=cam_data.get_rgb(rgb, False),
+            depth_img=np.squeeze(cam_data.get_depth(depth)),
+            grasp_q_img=q_img,
+            grasp_angle_img=ang_img,
+            no_grasps=args.n_grasps,
+            grasp_width_img=width_img
+        )
