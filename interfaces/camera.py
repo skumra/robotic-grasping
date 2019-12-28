@@ -47,8 +47,7 @@ class RealSenseCamera:
                     "Could not find RealSense configuration file at %s" % self.config_json_path)
             except:  # noqa
                 logger.exception('Could not load Realsense JSON configuration file %s', self.config_json_path)
-                raise odin.hardware.process.FatalHardwareError(
-                    'Could not load RealSense JSON config at %s' % self.config_json_path)
+                raise
 
         # Start and configure
         self.pipeline = rs.pipeline()
@@ -158,6 +157,7 @@ class RealSenseCamera:
 
         # plt.show()
         plt.savefig('cam435.png')
+
 
 if __name__ == '__main__':
     cam = RealSenseCamera(device_id=830112070066)
