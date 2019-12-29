@@ -26,8 +26,7 @@ class RealSenseCamera:
         self.pipeline = None
         self.align_to_rgb = None
         self.scale = None
-        self.rgb_intrinsics = None
-        self.depth_intrinsics = None
+        self.intrinsics = None
 
     def connect(self):
         # Start and configure
@@ -42,8 +41,14 @@ class RealSenseCamera:
         self.scale = cfg.get_device().first_depth_sensor().get_depth_scale()
         rgb_profile = cfg.get_stream(rs.stream.color)
         depth_profile = cfg.get_stream(rs.stream.depth)
-        self.rgb_intrinsics = rgb_profile.as_video_stream_profile().get_intrinsics()
-        self.depth_intrinsics = depth_profile.as_video_stream_profile().get_intrinsics()
+        rgb_intrinsics = rgb_profile.as_video_stream_profile().get_intrinsics()
+        depth_intrinsics = depth_profile.as_video_stream_profile().get_intrinsics()
+
+        self.intrinsics = np.array([
+            [rgb_intrinsics.fx, 0.0, rgb_intrinsics.ppx],
+            [0.0, rgb_intrinsics.fy, rgb_intrinsics.ppy],
+            [0.0, 0.0, 1.0]
+        ])
 
         # Alignment processors
         self.align_to_rgb = rs.align(rs.stream.color)
