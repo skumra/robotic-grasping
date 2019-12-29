@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import optimize
 
-from interfaces.camera import Camera
+from interfaces.camera import RealSenseCamera
 from interfaces.robot import Robot
 
 
@@ -13,6 +13,7 @@ class Calibration:
     def __init__(self,
                  robot_ip='127.0.0.1',
                  robot_port=1000,
+                 cam_id=830112070066,
                  calib_grid_step=0.05,
                  checkerboard_offset_from_tool=[0, -0.13, 0.02],
                  tool_orientation=[-np.pi / 2, 0, 0]
@@ -23,7 +24,7 @@ class Calibration:
 
         self.workspace_limits = np.asarray([[0.3, 0.748], [0.05, 0.4], [-0.2, -0.1]])  # Cols: min max, Rows: x y z (define workspace limits in robot coordinates)
 
-        self.camera = Camera()
+        self.camera = RealSenseCamera(device_id=cam_id)
         self.robot = Robot(robot_ip, robot_port, self.workspace_limits)
 
         self.measured_pts = []
@@ -100,6 +101,9 @@ class Calibration:
         return calib_grid_pts
         
     def run(self):
+        # Connect to camera
+        self.camera.connect()
+
         # Move robot to home pose
         print('Moving to start position...')
         self.robot.go_home()
@@ -120,7 +124,9 @@ class Calibration:
             # Find checkerboard center
             checkerboard_size = (3, 3)
             refine_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-            camera_color_img, camera_depth_img = self.camera.get_data()
+            image_bundle = self.camera.get_image_bundle()
+            camera_color_img = image_bundle['rgb']
+            camera_depth_img = image_bundle['aligned_depth']
             bgr_color_data = cv2.cvtColor(camera_color_img, cv2.COLOR_RGB2BGR)
             gray_data = cv2.cvtColor(bgr_color_data, cv2.COLOR_RGB2GRAY)
             checkerboard_found, corners = cv2.findChessboardCorners(gray_data, checkerboard_size, None,
