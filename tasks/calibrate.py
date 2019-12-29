@@ -168,10 +168,10 @@ class Calibration:
 
         # Save camera optimized offset and camera pose
         print('Saving...')
-        np.savetxt('real/camera_depth_scale.txt', camera_depth_offset, delimiter=' ')
+        np.savetxt('camera_depth_scale.txt', camera_depth_offset, delimiter=' ')
         self._get_rigid_transform_error(camera_depth_offset)
         camera_pose = np.linalg.inv(world2camera)
-        np.savetxt('real/camera_pose.txt', camera_pose, delimiter=' ')
+        np.savetxt('camera_pose.txt', camera_pose, delimiter=' ')
         print('Done.')
 
         # ---------------------------------------------
@@ -207,3 +207,8 @@ class Calibration:
         ax.scatter(t_new_observed_pts[:,0],t_new_observed_pts[:,1],t_new_observed_pts[:,2], c='green')
 
         plt.show()
+
+
+if __name__ == '__main__':
+    calibration = Calibration()
+    calibration.run()
