@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import optimize
 
-from interfaces.camera2 import Camera
+from interfaces.camera import Camera
 from interfaces.robot import Robot
 
 
