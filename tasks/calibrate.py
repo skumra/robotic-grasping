@@ -164,9 +164,9 @@ class Calibration:
         # Move robot back to home pose
         self.robot.go_home()
 
-        measured_pts = np.asarray(self.measured_pts)
-        observed_pts = np.asarray(self.observed_pts)
-        observed_pix = np.asarray(self.observed_pix)
+        self.measured_pts = np.asarray(self.measured_pts)
+        self.observed_pts = np.asarray(self.observed_pts)
+        self.observed_pix = np.asarray(self.observed_pix)
         world2camera = np.eye(4)
 
         # Optimize z scale w.r.t. rigid transform error
@@ -185,9 +185,9 @@ class Calibration:
 
         # ---------------------------------------------
 
-        np.savetxt('measured_pts.txt', np.asarray(measured_pts), delimiter=' ')
-        np.savetxt('observed_pts.txt', np.asarray(observed_pts), delimiter=' ')
-        np.savetxt('observed_pix.txt', np.asarray(observed_pix), delimiter=' ')
+        np.savetxt('measured_pts.txt', self.measured_pts, delimiter=' ')
+        np.savetxt('observed_pts.txt', self.observed_pts, delimiter=' ')
+        np.savetxt('observed_pix.txt', self.observed_pix, delimiter=' ')
         measured_pts = np.loadtxt('measured_pts.txt', delimiter=' ')
         observed_pts = np.loadtxt('observed_pts.txt', delimiter=' ')
         observed_pix = np.loadtxt('observed_pix.txt', delimiter=' ')
