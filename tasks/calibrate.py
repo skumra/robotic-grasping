@@ -118,6 +118,7 @@ class Calibration:
         calib_grid_pts = self._generate_grid()
 
         for tool_position in calib_grid_pts:
+            print('Moving to tool positon: ', tool_position)
             self.robot.move_to(tool_position, self.tool_orientation)
             time.sleep(1)
 
@@ -157,6 +158,8 @@ class Calibration:
                 cv2.imwrite('%06d.png' % len(self.measured_pts), vis)
                 cv2.imshow('Calibration', vis)
                 cv2.waitKey(10)
+            else:
+                print('Checker board not found')
 
         # Move robot back to home pose
         self.robot.go_home()
@@ -213,8 +216,3 @@ class Calibration:
         ax.scatter(t_new_observed_pts[:,0],t_new_observed_pts[:,1],t_new_observed_pts[:,2], c='green')
 
         plt.show()
-
-
-if __name__ == '__main__':
-    calibration = Calibration()
-    calibration.run()
