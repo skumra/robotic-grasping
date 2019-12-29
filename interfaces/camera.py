@@ -1,5 +1,4 @@
 import logging
-import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -76,7 +75,7 @@ class RealSenseCamera:
         rgb = images['rgb']
         depth = images['aligned_depth']
 
-        fig, ax = plt.subplots(2, 2, squeeze=False)
+        fig, ax = plt.subplots(1, 2, squeeze=False)
         ax[0, 0].imshow(rgb)
         m, s = np.nanmean(depth), np.nanstd(depth)
         ax[0, 1].imshow(depth.squeeze(axis=2), vmin=m - s, vmax=m + s, cmap=plt.cm.gray)
@@ -84,7 +83,6 @@ class RealSenseCamera:
         ax[0, 1].set_title('aligned_depth')
 
         plt.show()
-        # plt.savefig('cam435.png')
 
 
 if __name__ == '__main__':
@@ -92,4 +90,4 @@ if __name__ == '__main__':
     cam.connect()
     while True:
         cam.plot_image_bundle()
-        time.sleep(1)
+
