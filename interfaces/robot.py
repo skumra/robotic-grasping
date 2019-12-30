@@ -1,24 +1,18 @@
-import numpy as np
 import struct
+
+import baxter_interface
+import numpy as np
 import rospy
-
-from geometry_msgs.msg import (
-    PoseStamped,
-    Pose,
-    Point,
-    Quaternion,
-)
-from std_msgs.msg import (
-    Header,
-    Empty,
-)
-
 from baxter_core_msgs.srv import (
     SolvePositionIK,
     SolvePositionIKRequest,
 )
-
-import baxter_interface
+from geometry_msgs.msg import (
+    PoseStamped,
+)
+from std_msgs.msg import (
+    Header,
+)
 
 
 class Robot:
