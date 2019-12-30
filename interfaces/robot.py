@@ -1,9 +1,6 @@
 import numpy as np
-import argparse
 import struct
-import sys
 import rospy
-import rospkg
 
 from geometry_msgs.msg import (
     PoseStamped,
@@ -24,23 +21,20 @@ from baxter_core_msgs.srv import (
 import baxter_interface
 
 
-
-
 class Robot:
-    def __init__(self, robot_ip, robot_port, workspace_limits):
+    def __init__(self, robot_ip, robot_port, workspace_limits,limb,verbose=True):
         self.robot_ip = robot_ip
         self.robot_port = robot_port
         self.workspace_limits = workspace_limits
 
         self.home_joint_config = [-np.pi, -np.pi/2, np.pi/2, -np.pi/2, -np.pi/2, 0]
         self._limb_name = limb # string
+        self._verbose = verbose
         self._limb = baxter_interface.Limb(limb)
         self._gripper = baxter_interface.Gripper(limb)
         ns = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
         self._iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
         rospy.wait_for_service(ns, 5.0)
-
-
 
     def _ik_request(self, pose):
         hdr = Header(stamp=rospy.Time.now(), frame_id='base')
@@ -48,7 +42,7 @@ class Robot:
         ikreq.pose_stamp.append(PoseStamped(header=hdr, pose=pose))
         try:
             resp = self._iksvc(ikreq)
-        except (rospy.ServiceException, rospy.ROSException), e:
+        except (rospy.ServiceException, rospy.ROSException) as e:
             rospy.logerr("Service call failed: %s" % (e,))
             return False
         # Check if result valid, and type of seed ultimately used to get solution
@@ -78,10 +72,10 @@ class Robot:
         """ Establish connection with the robot """
         # verify robot is enabled
         print("Getting robot state... ")
-        self._rs = baxter_interface.RobotEnable(baxter_interface.CHECK_VERSION)
-        self._init_state = self._rs.state().enabled
+        rs = baxter_interface.RobotEnable(baxter_interface.CHECK_VERSION)
+        init_state = rs.state().enabled
         print("Enabling robot... ")
-        self._rs.enable()
+        rs.enable()
 
     def close_gripper(self):
         """ Close robot gripper """
@@ -94,7 +88,7 @@ class Robot:
         rospy.sleep(1.0)
 
     def move_to(self, pose):
-        """ Move robot in cartesian space"""
+        """ Move robot in cartesian space """
         joint_angles = self._ik_request(pose)
         self.move_joints(joint_angles)
 
@@ -106,12 +100,10 @@ class Robot:
             rospy.logerr("No Joint Angles provided for move_to_joint_positions. Staying put.")
 
     def current_pose(self):
-       """return current pose from endpoint"""
-       current_pose = self._limb.endpoint_pose()
-       return current_pose
-
+        """ Return current pose from endpoint """
+        current_pose = self._limb.endpoint_pose()
+        return current_pose
 
     def go_home(self):
         """ Move robot to home position """
         self.move_joints(self.home_joint_config)
-
