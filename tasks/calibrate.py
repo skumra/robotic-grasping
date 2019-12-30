@@ -106,6 +106,9 @@ class Calibration:
         # Connect to camera
         self.camera.connect()
 
+        # Connect to robot
+        self.robot.connect()
+
         # Move robot to home pose
         print('Moving to start position...')
         self.robot.go_home()
@@ -121,7 +124,8 @@ class Calibration:
 
         for tool_position in calib_grid_pts:
             print('Moving to tool positon: ', tool_position)
-            self.robot.move_to(tool_position, self.tool_orientation)
+            pose = np.concatenate((tool_position, self.tool_orientation))
+            self.robot.move_to(pose)
             time.sleep(1)
 
             # Find checkerboard center
