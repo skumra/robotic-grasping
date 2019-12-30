@@ -67,9 +67,10 @@ class Robot:
         # verify robot is enabled
         print("Getting robot state... ")
         rs = baxter_interface.RobotEnable(baxter_interface.CHECK_VERSION)
-        init_state = rs.state().enabled
-        print("Enabling robot... ")
-        rs.enable()
+        if not rs.state().enabled:
+            print("Enabling robot... ")
+            rs.enable()
+        print("Robot enabled... ")
 
         ns = "ExternalTools/" + self.limb + "/PositionKinematicsNode/IKService"
         self._iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
