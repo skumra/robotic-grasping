@@ -61,6 +61,9 @@ class Robot:
 
     def connect(self):
         """ Establish connection with the robot """
+        # Initialize ros node
+        rospy.init_node("pick_and_place")
+
         # verify robot is enabled
         print("Getting robot state... ")
         rs = baxter_interface.RobotEnable(baxter_interface.CHECK_VERSION)
