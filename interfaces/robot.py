@@ -16,7 +16,7 @@ from std_msgs.msg import (
 
 
 class Robot:
-    def __init__(self, robot_ip, robot_port, workspace_limits, limb, verbose=True):
+    def __init__(self, robot_ip, robot_port, workspace_limits=None, limb='left', verbose=True):
         self.robot_ip = robot_ip
         self.robot_port = robot_port
         self.workspace_limits = workspace_limits
