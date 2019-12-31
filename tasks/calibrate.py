@@ -183,20 +183,20 @@ class Calibration:
 
         # Save camera optimized offset and camera pose
         print('Saving...')
-        np.savetxt('camera_depth_scale.txt', camera_depth_offset, delimiter=' ')
+        np.savetxt('saved_data/camera_depth_scale.txt', camera_depth_offset, delimiter=' ')
         self._get_rigid_transform_error(camera_depth_offset)
         camera_pose = np.linalg.inv(world2camera)
-        np.savetxt('camera_pose.txt', camera_pose, delimiter=' ')
+        np.savetxt('saved_data/camera_pose.txt', camera_pose, delimiter=' ')
         print('Done.')
 
         # ---------------------------------------------
 
-        np.savetxt('measured_pts.txt', self.measured_pts, delimiter=' ')
-        np.savetxt('observed_pts.txt', self.observed_pts, delimiter=' ')
-        np.savetxt('observed_pix.txt', self.observed_pix, delimiter=' ')
-        measured_pts = np.loadtxt('measured_pts.txt', delimiter=' ')
-        observed_pts = np.loadtxt('observed_pts.txt', delimiter=' ')
-        observed_pix = np.loadtxt('observed_pix.txt', delimiter=' ')
+        np.savetxt('saved_data/measured_pts.txt', self.measured_pts, delimiter=' ')
+        np.savetxt('saved_data/observed_pts.txt', self.observed_pts, delimiter=' ')
+        np.savetxt('saved_data/observed_pix.txt', self.observed_pix, delimiter=' ')
+        measured_pts = np.loadtxt('saved_data/measured_pts.txt', delimiter=' ')
+        observed_pts = np.loadtxt('saved_data/observed_pts.txt', delimiter=' ')
+        observed_pix = np.loadtxt('saved_data/observed_pix.txt', delimiter=' ')
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
