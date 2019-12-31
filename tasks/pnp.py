@@ -2,17 +2,26 @@ import copy
 
 from geometry_msgs.msg import Pose
 
-import interfaces.robot
+from interfaces.camera import RealSenseCamera
+from interfaces.robot import Robot
+from inference.grasp_generator import GraspGenerator
 
 
 class PickAndPlace:
     def __init__(
             self,
-            robot: interfaces.robot.Robot,
+            saved_model,
+            robot_ip='127.0.0.1',
+            robot_port=1000,
+            cam_id=830112070066,
             hover_distance=0.15
     ):
-        self.robot = robot
         self._hover_distance = hover_distance  # in meters
+        self.saved_model = saved_model
+
+        self.camera = RealSenseCamera(device_id=cam_id)
+        self.robot = Robot(robot_ip, robot_port)
+        self.grasp_generator = GraspGenerator(saved_model=saved_model, camera=self.camera)
 
     def _approach(self, pose):
         """
@@ -73,3 +82,19 @@ class PickAndPlace:
         self.robot.open_gripper()
         # retract to clear object
         self._retract()
+
+    def run(self):
+        # Connect to camera
+        self.camera.connect()
+
+        # Connect to robot
+        self.robot.connect()
+
+        # Load model
+        print('Loading model... ')
+        self.grasp_generator.load_model()
+
+        # Move robot to home pose
+        print('Moving to start position...')
+        self.robot.go_home()
+        self.robot.open_gripper()
