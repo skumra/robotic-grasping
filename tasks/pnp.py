@@ -11,6 +11,7 @@ class PickAndPlace:
     def __init__(
             self,
             saved_model,
+            place_pose,
             robot_ip='127.0.0.1',
             robot_port=1000,
             cam_id=830112070066,
@@ -18,6 +19,7 @@ class PickAndPlace:
     ):
         self._hover_distance = hover_distance  # in meters
         self.saved_model = saved_model
+        self.place_pose = place_pose
 
         self.camera = RealSenseCamera(device_id=cam_id)
         self.robot = Robot(robot_ip, robot_port)
@@ -94,7 +96,20 @@ class PickAndPlace:
         print('Loading model... ')
         self.grasp_generator.load_model()
 
-        # Move robot to home pose
-        print('Moving to start position...')
-        self.robot.go_home()
-        self.robot.open_gripper()
+        while True:
+            # Move robot to home pose
+            print('Moving to start position...')
+            self.robot.go_home()
+            self.robot.open_gripper()
+
+            # Get the grasp pose
+            print('Generating grasp pose...')
+            grasp_pose = self.grasp_generator.generate()
+
+            # Perform pick
+            print('Picking from ', grasp_pose)
+            self.pick(grasp_pose)
+
+            # Perform place
+            print('Placing to ', self.place_pose)
+            self.place(self.place_pose)

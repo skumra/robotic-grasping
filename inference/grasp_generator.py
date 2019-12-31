@@ -15,7 +15,7 @@ class GraspGenerator:
 
         self.cam_data = CameraData(include_depth=True, include_rgb=True)
 
-        # Load camera pose (from running calibrate.py), intrinsics and depth scale
+        # Load camera pose and depth scale (from running calibration)
         self.cam_pose = np.loadtxt('real/camera_pose.txt', delimiter=' ')
         self.cam_depth_scale = np.loadtxt('real/camera_depth_scale.txt', delimiter=' ')
 
