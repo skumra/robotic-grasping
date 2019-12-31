@@ -11,8 +11,8 @@ import torch.optim as optim
 import torch.utils.data
 from torchsummary import summary
 
-from model import GenerativeResnet
-from post_process import post_process_output
+from inference.model import GenerativeResnet
+from inference.post_process import post_process_output
 from utils.data import get_dataset
 from utils.dataset_processing import evaluation
 from utils.visualisation.gridshow import gridshow

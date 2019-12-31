@@ -6,7 +6,7 @@ import numpy as np
 import torch.utils.data
 from PIL import Image
 
-from post_process import post_process_output
+from inference.post_process import post_process_output
 from utils.data.camera_data import CameraData
 from utils.visualisation.plot import plot_results, save_results
 logging.basicConfig(level=logging.INFO)
