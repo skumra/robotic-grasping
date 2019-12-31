@@ -1,4 +1,7 @@
 import copy
+
+from geometry_msgs.msg import Pose
+
 import interfaces.robot
 
 
