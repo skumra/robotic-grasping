@@ -8,6 +8,6 @@ if __name__ == '__main__':
         cam_id=830112070066,
         saved_model='saved_data/jacquard_rgbd_iou_0.94',
         hover_distance=0.15,
-        place_pose=[]
+        place_position=[1, 2, 3]
     )
     pnp.run()

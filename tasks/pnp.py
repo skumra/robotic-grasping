@@ -2,9 +2,10 @@ import copy
 
 from geometry_msgs.msg import Pose
 
+from inference.grasp_generator import GraspGenerator
 from interfaces.camera import RealSenseCamera
 from interfaces.robot import Robot
-from inference.grasp_generator import GraspGenerator
+from utils.transforms import get_pose
 
 
 class PickAndPlace:
@@ -15,11 +16,11 @@ class PickAndPlace:
             cam_id,
             saved_model,
             hover_distance,
-            place_pose
+            place_position
     ):
         self._hover_distance = hover_distance  # in meters
         self.saved_model = saved_model
-        self.place_pose = place_pose
+        self.place_position = place_position
 
         self.camera = RealSenseCamera(device_id=cam_id)
         self.robot = Robot(robot_ip, robot_port)
@@ -72,10 +73,13 @@ class PickAndPlace:
         # retract to clear object
         self._retract()
 
-    def place(self, pose):
+    def place(self, place_position):
         """
         Place to given pose
         """
+        # Calculate pose from place position
+        pose = get_pose(place_position, [0, 0, 0])
+        
         # servo above pose
         self._approach(pose)
         # servo to pose
@@ -111,5 +115,5 @@ class PickAndPlace:
             self.pick(grasp_pose)
 
             # Perform place
-            print('Placing to ', self.place_pose)
-            self.place(self.place_pose)
+            print('Placing to ', self.place_position)
+            self.place(self.place_position)
