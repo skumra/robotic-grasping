@@ -4,6 +4,7 @@ import torch
 from inference.post_process import post_process_output
 from utils.data.camera_data import CameraData
 from utils.dataset_processing.grasp import detect_grasps
+from utils.transforms import euler_to_quaternion
 
 
 class GraspGenerator:
@@ -54,7 +55,7 @@ class GraspGenerator:
         target_position = target_position[0:3, 0]
 
         # Get grasp angle from model output
-        target_orientation = grasp.angle
+        target_orientation = euler_to_quaternion(0, 0, grasp.angle)
 
         # Calculate grasp pose
         grasp_pose = np.concatenate((target_position, target_orientation))
