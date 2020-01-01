@@ -10,12 +10,12 @@ from inference.grasp_generator import GraspGenerator
 class PickAndPlace:
     def __init__(
             self,
+            robot_ip,
+            robot_port,
+            cam_id,
             saved_model,
-            place_pose,
-            robot_ip='127.0.0.1',
-            robot_port=1000,
-            cam_id=830112070066,
-            hover_distance=0.15
+            hover_distance,
+            place_pose
     ):
         self._hover_distance = hover_distance  # in meters
         self.saved_model = saved_model
