@@ -17,8 +17,8 @@ class GraspGenerator:
         self.cam_data = CameraData(include_depth=True, include_rgb=True)
 
         # Load camera pose and depth scale (from running calibration)
-        self.cam_pose = np.loadtxt('real/camera_pose.txt', delimiter=' ')
-        self.cam_depth_scale = np.loadtxt('real/camera_depth_scale.txt', delimiter=' ')
+        self.cam_pose = np.loadtxt('saved_data/camera_pose.txt', delimiter=' ')
+        self.cam_depth_scale = np.loadtxt('saved_data/camera_depth_scale.txt', delimiter=' ')
 
     def load_model(self):
         self.model = torch.load(self.saved_model_path)
