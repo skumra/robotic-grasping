@@ -8,8 +8,8 @@ from utils.transforms import euler_to_quaternion_angles, get_pose
 
 
 class GraspGenerator:
-    def __init__(self, saved_model, camera):
-        self.saved_model = saved_model
+    def __init__(self, saved_model_path, camera):
+        self.saved_model_path = saved_model_path
         self.camera = camera
         self.model = None
         self.device = None
@@ -21,7 +21,7 @@ class GraspGenerator:
         self.cam_depth_scale = np.loadtxt('real/camera_depth_scale.txt', delimiter=' ')
 
     def load_model(self):
-        self.model = torch.load(self.saved_model)
+        self.model = torch.load(self.saved_model_path)
         self.device = torch.device("cuda:0")
 
     def generate(self):

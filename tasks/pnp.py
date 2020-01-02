@@ -14,17 +14,17 @@ class PickAndPlace:
             robot_ip,
             robot_port,
             cam_id,
-            saved_model,
+            saved_model_path,
             hover_distance,
             place_position
     ):
         self._hover_distance = hover_distance  # in meters
-        self.saved_model = saved_model
+        self.saved_model_path = saved_model_path
         self.place_position = place_position
 
         self.camera = RealSenseCamera(device_id=cam_id)
         self.robot = Robot(robot_ip, robot_port)
-        self.grasp_generator = GraspGenerator(saved_model=saved_model, camera=self.camera)
+        self.grasp_generator = GraspGenerator(saved_model_path=saved_model_path, camera=self.camera)
 
     def _approach(self, pose):
         """
