@@ -2,17 +2,29 @@ import copy
 
 from geometry_msgs.msg import Pose
 
-import interfaces.robot
+from inference.grasp_generator import GraspGenerator
+from interfaces.camera import RealSenseCamera
+from interfaces.robot import Robot
+from utils.transforms import get_pose
 
 
 class PickAndPlace:
     def __init__(
             self,
-            robot: interfaces.robot.Robot,
-            hover_distance=0.15
+            robot_ip,
+            robot_port,
+            cam_id,
+            saved_model_path,
+            hover_distance,
+            place_position
     ):
-        self.robot = robot
         self._hover_distance = hover_distance  # in meters
+        self.saved_model_path = saved_model_path
+        self.place_position = place_position
+
+        self.camera = RealSenseCamera(device_id=cam_id)
+        self.robot = Robot(robot_ip, robot_port)
+        self.grasp_generator = GraspGenerator(saved_model_path=saved_model_path, camera=self.camera)
 
     def _approach(self, pose):
         """
@@ -61,10 +73,13 @@ class PickAndPlace:
         # retract to clear object
         self._retract()
 
-    def place(self, pose):
+    def place(self, place_position):
         """
         Place to given pose
         """
+        # Calculate pose from place position
+        pose = get_pose(place_position, [0, 0, 0])
+        
         # servo above pose
         self._approach(pose)
         # servo to pose
@@ -73,3 +88,32 @@ class PickAndPlace:
         self.robot.open_gripper()
         # retract to clear object
         self._retract()
+
+    def run(self):
+        # Connect to camera
+        self.camera.connect()
+
+        # Connect to robot
+        self.robot.connect()
+
+        # Load model
+        print('Loading model... ')
+        self.grasp_generator.load_model()
+
+        while True:
+            # Move robot to home pose
+            print('Moving to start position...')
+            self.robot.go_home()
+            self.robot.open_gripper()
+
+            # Get the grasp pose
+            print('Generating grasp pose...')
+            grasp_pose = self.grasp_generator.generate()
+
+            # Perform pick
+            print('Picking from ', grasp_pose)
+            self.pick(grasp_pose)
+
+            # Perform place
+            print('Placing to ', self.place_position)
+            self.place(self.place_position)

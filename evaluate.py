@@ -3,10 +3,10 @@ import logging
 
 import torch.utils.data
 
-from post_process import post_process_output
+from inference.post_process import post_process_output
 from utils.data import get_dataset
 from utils.dataset_processing import evaluation, grasp
-from utils.visualisation.plot import plot_results, save_results
+from utils.visualisation.plot import save_results
 
 logging.basicConfig(level=logging.INFO)
 
