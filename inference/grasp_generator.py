@@ -1,26 +1,34 @@
+import time
+
 import numpy as np
 import torch
 
+from hardware.camera import RealSenseCamera
 from inference.post_process import post_process_output
 from utils.data.camera_data import CameraData
 from utils.dataset_processing.grasp import detect_grasps
-from utils.transforms import euler_to_quaternion_angles, get_pose
 
 
 class GraspGenerator:
-    def __init__(self, saved_model_path, camera):
+    def __init__(self, saved_model_path, cam_id):
         self.saved_model_path = saved_model_path
-        self.camera = camera
+        self.camera = RealSenseCamera(device_id=cam_id)
+
+        self.saved_model_path = saved_model_path
         self.model = None
         self.device = None
 
         self.cam_data = CameraData(include_depth=True, include_rgb=True)
+
+        # Connect to camera
+        self.camera.connect()
 
         # Load camera pose and depth scale (from running calibration)
         self.cam_pose = np.loadtxt('saved_data/camera_pose.txt', delimiter=' ')
         self.cam_depth_scale = np.loadtxt('saved_data/camera_depth_scale.txt', delimiter=' ')
 
     def load_model(self):
+        print('Loading model... ')
         self.model = torch.load(self.saved_model_path)
         self.device = torch.device("cuda:0")
 
@@ -40,9 +48,9 @@ class GraspGenerator:
         grasp = detect_grasps(q_img, ang_img, width_img)[0]
 
         # Get grasp position from model output
-        pos_z = depth_img[grasp.center[0]][grasp.center[1]] * self.cam_depth_scale
-        pos_x = np.multiply(grasp.center[1] - self.camera.cam_intrinsics[0][2], pos_z / self.camera.cam_intrinsics[0][0])
-        pos_y = np.multiply(grasp.center[0] - self.camera.cam_intrinsics[1][2], pos_z / self.camera.cam_intrinsics[1][1])
+        pos_z = depth[grasp.center[0]][grasp.center[1]] * self.cam_depth_scale
+        pos_x = np.multiply(grasp.center[1] - self.camera.intrinsics[0][2], pos_z / self.camera.intrinsics[0][0])
+        pos_y = np.multiply(grasp.center[0] - self.camera.intrinsics[1][2], pos_z / self.camera.intrinsics[1][1])
         if pos_z == 0:
             return
         target = np.asarray([pos_x, pos_y, pos_z])
@@ -53,11 +61,15 @@ class GraspGenerator:
         target_position = np.dot(camera2robot[0:3, 0:3], target) + camera2robot[0:3, 3:]
 
         target_position = target_position[0:3, 0]
+        grasp_pose = np.append(target_position, grasp.angle)
 
-        # Get grasp angle from model output
-        target_orientation = euler_to_quaternion_angles(0, 0, grasp.angle)
+        np.save("grasp_pose.npy", grasp_pose)
 
-        # Calculate grasp pose
-        grasp_pose = get_pose(target_position, target_orientation)
-
-        return grasp_pose
+    def run(self):
+        while True:
+            if np.load("grasp_request.npy"):
+                self.generate()
+                np.save("grasp_request.npy", 0)
+                np.save("grasp_available.npy", 1)
+            else:
+                time.sleep(0.1)
