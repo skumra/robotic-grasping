@@ -1,3 +1,4 @@
+import os
 import time
 
 import cv2
@@ -27,6 +28,10 @@ class Calibration:
         self.measured_pts = []
         self.observed_pts = []
         self.observed_pix = []
+
+        homedir = os.path.join(os.path.expanduser('~'), "grasp-comms")
+        self.move_completed = os.path.join(homedir, "move_completed.npy")
+        self.tool_position = os.path.join(homedir, "tool_position.npy")
 
     @staticmethod
     def _get_rigid_transform(A, B):
@@ -107,9 +112,9 @@ class Calibration:
 
         for tool_position in calib_grid_pts:
             print('Requesting move to tool position: ', tool_position)
-            np.save("tool_position.npy", tool_position)
-            np.save("move_completed.npy", 0)
-            while not np.load("move_completed.npy"):
+            np.save(self.tool_position, tool_position)
+            np.save(self.move_completed, 0)
+            while not np.load(self.move_completed):
                 time.sleep(0.1)
 
             # Find checkerboard center

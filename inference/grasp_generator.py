@@ -1,3 +1,4 @@
+import os
 import time
 
 import numpy as np
@@ -26,6 +27,11 @@ class GraspGenerator:
         # Load camera pose and depth scale (from running calibration)
         self.cam_pose = np.loadtxt('saved_data/camera_pose.txt', delimiter=' ')
         self.cam_depth_scale = np.loadtxt('saved_data/camera_depth_scale.txt', delimiter=' ')
+
+        homedir = os.path.join(os.path.expanduser('~'), "grasp-comms")
+        self.grasp_request = os.path.join(homedir, "grasp_request.npy")
+        self.grasp_available = os.path.join(homedir, "grasp_available.npy")
+        self.grasp_pose = os.path.join(homedir, "grasp_pose.npy")
 
     def load_model(self):
         print('Loading model... ')
@@ -63,13 +69,13 @@ class GraspGenerator:
         target_position = target_position[0:3, 0]
         grasp_pose = np.append(target_position, grasp.angle)
 
-        np.save("grasp_pose.npy", grasp_pose)
+        np.save(self.grasp_pose, grasp_pose)
 
     def run(self):
         while True:
-            if np.load("grasp_request.npy"):
+            if np.load(self.grasp_request):
                 self.generate()
-                np.save("grasp_request.npy", 0)
-                np.save("grasp_available.npy", 1)
+                np.save(self.grasp_request, 0)
+                np.save(self.grasp_available, 1)
             else:
                 time.sleep(0.1)
