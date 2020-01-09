@@ -33,9 +33,29 @@ If you use this project in your research or wish to refer to the baseline result
 - Pillow
 
 ## Installation
-
+- Checkout the robotic grasping package
+```bash
+$ git clone https://github.com/skumra/robotic-grasping.git
 ```
-git clone git@github.com:skumra/robotic-grasping.git
-cd robotic-grasping
-pip install -r requirements.txt
+
+- Create a virtual environment
+```bash
+$ python3.6 -m venv --system-site-packages venv
+```
+
+- Source the virtual environment
+```bash
+$ source venv/bin/activate
+```
+
+- Install the requirements
+```bash
+$ cd robotic-grasping
+$ pip install -r requirements.txt
+```
+
+## Run Tasks
+Run the relevant task using the run programs. For example, to run the grasp generator run:
+```bash
+python run_grasp_generator.py
 ```
