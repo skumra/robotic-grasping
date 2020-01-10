@@ -1,6 +1,7 @@
 import os
 import time
 
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
@@ -8,10 +9,11 @@ from hardware.camera import RealSenseCamera
 from inference.post_process import post_process_output
 from utils.data.camera_data import CameraData
 from utils.dataset_processing.grasp import detect_grasps
+from utils.visualisation.plot import plot_grasp
 
 
 class GraspGenerator:
-    def __init__(self, saved_model_path, cam_id):
+    def __init__(self, saved_model_path, cam_id, visualize=False):
         self.saved_model_path = saved_model_path
         self.camera = RealSenseCamera(device_id=cam_id)
 
@@ -32,6 +34,11 @@ class GraspGenerator:
         self.grasp_request = os.path.join(homedir, "grasp_request.npy")
         self.grasp_available = os.path.join(homedir, "grasp_available.npy")
         self.grasp_pose = os.path.join(homedir, "grasp_pose.npy")
+
+        if visualize:
+            self.fig = plt.figure(figsize=(10, 10))
+        else:
+            self.fig = None
 
     def load_model(self):
         print('Loading model... ')
@@ -70,6 +77,13 @@ class GraspGenerator:
         grasp_pose = np.append(target_position, grasp.angle)
 
         np.save(self.grasp_pose, grasp_pose)
+
+        if self.fig:
+            plot_grasp(fig=self.fig,
+                       rgb_img=self.cam_data.get_rgb(rgb, False),
+                       grasp_q_img=q_img,
+                       grasp_angle_img=ang_img,
+                       grasp_width_img=width_img)
 
     def run(self):
         while True:
