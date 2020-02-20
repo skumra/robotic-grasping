@@ -28,6 +28,7 @@ class Calibration:
         self.measured_pts = []
         self.observed_pts = []
         self.observed_pix = []
+        self.world2camera = np.eye(4)
 
         homedir = os.path.join(os.path.expanduser('~'), "grasp-comms")
         self.move_completed = os.path.join(homedir, "move_completed.npy")
@@ -70,7 +71,7 @@ class Calibration:
         # Estimate rigid transform between measured points and new observed points
         R, t = self._get_rigid_transform(np.asarray(self.measured_pts), np.asarray(new_observed_pts))
         t.shape = (3, 1)
-        world2camera = np.concatenate((np.concatenate((R, t), axis=1), np.array([[0, 0, 0, 1]])), axis=0)
+        self.world2camera = np.concatenate((np.concatenate((R, t), axis=1), np.array([[0, 0, 0, 1]])), axis=0)
 
         # Compute rigid transform error
         registered_pts = np.dot(R, np.transpose(self.measured_pts)) + np.tile(t, (1, self.measured_pts.shape[0]))
@@ -110,12 +111,15 @@ class Calibration:
 
         calib_grid_pts = self._generate_grid()
 
+        print('Total grid points: ', calib_grid_pts.shape[0])
+
         for tool_position in calib_grid_pts:
             print('Requesting move to tool position: ', tool_position)
             np.save(self.tool_position, tool_position)
             np.save(self.move_completed, 0)
             while not np.load(self.move_completed):
                 time.sleep(0.1)
+            time.sleep(0.5)
 
             # Find checkerboard center
             checkerboard_size = (3, 3)
@@ -159,7 +163,6 @@ class Calibration:
         self.measured_pts = np.asarray(self.measured_pts)
         self.observed_pts = np.asarray(self.observed_pts)
         self.observed_pix = np.asarray(self.observed_pix)
-        world2camera = np.eye(4)
 
         # Optimize z scale w.r.t. rigid transform error
         print('Calibrating...')
@@ -171,7 +174,7 @@ class Calibration:
         print('Saving...')
         np.savetxt('saved_data/camera_depth_scale.txt', camera_depth_offset, delimiter=' ')
         self._get_rigid_transform_error(camera_depth_offset)
-        camera_pose = np.linalg.inv(world2camera)
+        camera_pose = np.linalg.inv(self.world2camera)
         np.savetxt('saved_data/camera_pose.txt', camera_pose, delimiter=' ')
         print('Done.')
 
