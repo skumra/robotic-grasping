@@ -24,7 +24,7 @@ class Calibration:
         self.workspace_limits = workspace_limits
 
         self.camera = RealSenseCamera(device_id=cam_id)
-
+        
         self.measured_pts = []
         self.observed_pts = []
         self.observed_pix = []
@@ -40,6 +40,7 @@ class Calibration:
         Estimate rigid transform with SVD (from Nghia Ho)
         """
         assert len(A) == len(B)
+
         N = A.shape[0]  # Total points
         centroid_A = np.mean(A, axis=0)
         centroid_B = np.mean(B, axis=0)
@@ -61,12 +62,13 @@ class Calibration:
         :return RMS error
         """
         # Apply z offset and compute new observed points using camera intrinsics
-        observed_z = self.observed_pts[:, 2:] * z_scale
-        observed_x = np.multiply(self.observed_pix[:, [0]] - self.camera.intrinsics[0][2],
+        observed_z = np.squeeze(self.observed_pts[:, 2:] * z_scale)
+        observed_x = np.multiply(np.squeeze(self.observed_pix[:, [0]]) - self.camera.intrinsics[0][2],
                                  observed_z / self.camera.intrinsics[0][0])
-        observed_y = np.multiply(self.observed_pix[:, [1]] - self.camera.intrinsics[1][2],
+        observed_y = np.multiply(np.squeeze(self.observed_pix[:, [1]]) - self.camera.intrinsics[1][2],
                                  observed_z / self.camera.intrinsics[1][1])
-        new_observed_pts = np.concatenate((observed_x, observed_y, observed_z), axis=1)
+
+        new_observed_pts = np.asarray([observed_x, observed_y, observed_z]).T
 
         # Estimate rigid transform between measured points and new observed points
         R, t = self._get_rigid_transform(np.asarray(self.measured_pts), np.asarray(new_observed_pts))
@@ -106,6 +108,7 @@ class Calibration:
     def run(self):
         # Connect to camera
         self.camera.connect()
+        print(self.camera.intrinsics)
 
         print('Collecting data...')
 
