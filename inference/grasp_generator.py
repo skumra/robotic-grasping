@@ -62,8 +62,8 @@ class GraspGenerator:
 
         # Get grasp position from model output
         pos_z = depth[grasp.center[0]][grasp.center[1]] * self.cam_depth_scale
-        pos_x = np.multiply(grasp.center[1] - self.camera.intrinsics[0][2], pos_z / self.camera.intrinsics[0][0])
-        pos_y = np.multiply(grasp.center[0] - self.camera.intrinsics[1][2], pos_z / self.camera.intrinsics[1][1])
+        pos_x = np.multiply(grasp.center[1] + self.cam_data.top_left[1] - self.camera.intrinsics.ppx, pos_z / self.camera.intrinsics.fx)
+        pos_y = np.multiply(grasp.center[0] + self.cam_data.top_left[0] - self.camera.intrinsics.ppy, pos_z / self.camera.intrinsics.fy)
         if pos_z == 0:
             return
         target = np.asarray([pos_x, pos_y, pos_z])

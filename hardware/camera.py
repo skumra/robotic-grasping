@@ -34,12 +34,7 @@ class RealSenseCamera:
 
         # Determine intrinsics
         rgb_profile = cfg.get_stream(rs.stream.color)
-        rgb_intrinsics = rgb_profile.as_video_stream_profile().get_intrinsics()
-        self.intrinsics = np.array([
-            [rgb_intrinsics.fx, 0.0, rgb_intrinsics.ppx],
-            [0.0, rgb_intrinsics.fy, rgb_intrinsics.ppy],
-            [0.0, 0.0, 1.0]
-        ])
+        self.intrinsics = rgb_profile.as_video_stream_profile().get_intrinsics()
 
         # Determine depth scale
         self.scale = cfg.get_device().first_depth_sensor().get_depth_scale()

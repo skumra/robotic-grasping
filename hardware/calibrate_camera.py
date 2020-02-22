@@ -63,10 +63,10 @@ class Calibration:
         """
         # Apply z offset and compute new observed points using camera intrinsics
         observed_z = np.squeeze(self.observed_pts[:, 2:] * z_scale)
-        observed_x = np.multiply(np.squeeze(self.observed_pix[:, [0]]) - self.camera.intrinsics[0][2],
-                                 observed_z / self.camera.intrinsics[0][0])
-        observed_y = np.multiply(np.squeeze(self.observed_pix[:, [1]]) - self.camera.intrinsics[1][2],
-                                 observed_z / self.camera.intrinsics[1][1])
+        observed_x = np.multiply(np.squeeze(self.observed_pix[:, [0]]) - self.camera.intrinsics.ppx,
+                                 observed_z / self.camera.intrinsics.fx)
+        observed_y = np.multiply(np.squeeze(self.observed_pix[:, [1]]) - self.camera.intrinsics.ppy,
+                                 observed_z / self.camera.intrinsics.fy)
 
         new_observed_pts = np.asarray([observed_x, observed_y, observed_z]).T
 
@@ -141,10 +141,10 @@ class Calibration:
                 # Get observed checkerboard center 3D point in camera space
                 checkerboard_pix = np.round(corners_refined[4, 0, :]).astype(int)
                 checkerboard_z = camera_depth_img[checkerboard_pix[1]][checkerboard_pix[0]]
-                checkerboard_x = np.multiply(checkerboard_pix[0] - self.camera.intrinsics[0][2],
-                                             checkerboard_z / self.camera.intrinsics[0][0])
-                checkerboard_y = np.multiply(checkerboard_pix[1] - self.camera.intrinsics[1][2],
-                                             checkerboard_z / self.camera.intrinsics[1][1])
+                checkerboard_x = np.multiply(checkerboard_pix[0] - self.camera.intrinsics.ppx,
+                                             checkerboard_z / self.camera.intrinsics.fx)
+                checkerboard_y = np.multiply(checkerboard_pix[1] - self.camera.intrinsics.ppy,
+                                             checkerboard_z / self.camera.intrinsics.fy)
                 if checkerboard_z == 0:
                     continue
 
