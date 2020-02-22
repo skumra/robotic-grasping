@@ -48,11 +48,11 @@ class RealSenseCamera:
         frames = self.pipeline.wait_for_frames()
 
         align = rs.align(rs.stream.color)
-        aligned_frames = align.proccess(frames)
+        aligned_frames = align.process(frames)
         color_frame = aligned_frames.first(rs.stream.color)
         aligned_depth_frame = aligned_frames.get_depth_frame()
 
-        depth_image = np.asanyarray(aligned_depth_frame.get_data())
+        depth_image = np.asarray(aligned_depth_frame.get_data(), dtype=np.float32)
         depth_image *= self.scale
         color_image = np.asanyarray(color_frame.get_data())
 
