@@ -122,7 +122,8 @@ class Calibration:
             np.save(self.move_completed, 0)
             while not np.load(self.move_completed):
                 time.sleep(0.1)
-            time.sleep(0.5)
+            #wait for robot to be stable    
+            time.sleep(1)
 
             # Find checkerboard center
             checkerboard_size = (3, 3)
@@ -183,34 +184,34 @@ class Calibration:
 
         # ---------------------------------------------
 
-        np.savetxt('saved_data/measured_pts.txt', self.measured_pts, delimiter=' ')
-        np.savetxt('saved_data/observed_pts.txt', self.observed_pts, delimiter=' ')
-        np.savetxt('saved_data/observed_pix.txt', self.observed_pix, delimiter=' ')
-        measured_pts = np.loadtxt('saved_data/measured_pts.txt', delimiter=' ')
-        observed_pts = np.loadtxt('saved_data/observed_pts.txt', delimiter=' ')
-        observed_pix = np.loadtxt('saved_data/observed_pix.txt', delimiter=' ')
+        # np.savetxt('saved_data/measured_pts.txt', self.measured_pts, delimiter=' ')
+        # np.savetxt('saved_data/observed_pts.txt', self.observed_pts, delimiter=' ')
+        # np.savetxt('saved_data/observed_pix.txt', self.observed_pix, delimiter=' ')
+        # measured_pts = np.loadtxt('saved_data/measured_pts.txt', delimiter=' ')
+        # observed_pts = np.loadtxt('saved_data/observed_pts.txt', delimiter=' ')
+        # observed_pix = np.loadtxt('saved_data/observed_pix.txt', delimiter=' ')
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(measured_pts[:,0],measured_pts[:,1],measured_pts[:,2], c='blue')
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111, projection='3d')
+        # ax.scatter(measured_pts[:,0],measured_pts[:,1],measured_pts[:,2], c='blue')
 
-        print(camera_depth_offset)
-        R, t = self._get_rigid_transform(np.asarray(measured_pts), np.asarray(observed_pts))
-        t.shape = (3,1)
-        camera_pose = np.concatenate((np.concatenate((R, t), axis=1),np.array([[0, 0, 0, 1]])), axis=0)
-        camera2robot = np.linalg.inv(camera_pose)
-        t_observed_pts = np.transpose(np.dot(camera2robot[0:3,0:3],np.transpose(observed_pts)) + np.tile(camera2robot[0:3,3:],(1,observed_pts.shape[0])))
+        # print(camera_depth_offset)
+        # R, t = self._get_rigid_transform(np.asarray(measured_pts), np.asarray(observed_pts))
+        # t.shape = (3,1)
+        # camera_pose = np.concatenate((np.concatenate((R, t), axis=1),np.array([[0, 0, 0, 1]])), axis=0)
+        # camera2robot = np.linalg.inv(camera_pose)
+        # t_observed_pts = np.transpose(np.dot(camera2robot[0:3,0:3],np.transpose(observed_pts)) + np.tile(camera2robot[0:3,3:],(1,observed_pts.shape[0])))
 
-        ax.scatter(t_observed_pts[:,0],t_observed_pts[:,1],t_observed_pts[:,2], c='red')
+        # ax.scatter(t_observed_pts[:,0],t_observed_pts[:,1],t_observed_pts[:,2], c='red')
 
-        new_observed_pts = observed_pts.copy()
-        new_observed_pts[:,2] = new_observed_pts[:,2] * camera_depth_offset[0]
-        R, t = self._get_rigid_transform(np.asarray(measured_pts), np.asarray(new_observed_pts))
-        t.shape = (3,1)
-        camera_pose = np.concatenate((np.concatenate((R, t), axis=1),np.array([[0, 0, 0, 1]])), axis=0)
-        camera2robot = np.linalg.inv(camera_pose)
-        t_new_observed_pts = np.transpose(np.dot(camera2robot[0:3,0:3],np.transpose(new_observed_pts)) + np.tile(camera2robot[0:3,3:],(1,new_observed_pts.shape[0])))
+        # new_observed_pts = observed_pts.copy()
+        # new_observed_pts[:,2] = new_observed_pts[:,2] * camera_depth_offset[0]
+        # R, t = self._get_rigid_transform(np.asarray(measured_pts), np.asarray(new_observed_pts))
+        # t.shape = (3,1)
+        # camera_pose = np.concatenate((np.concatenate((R, t), axis=1),np.array([[0, 0, 0, 1]])), axis=0)
+        # camera2robot = np.linalg.inv(camera_pose)
+        # t_new_observed_pts = np.transpose(np.dot(camera2robot[0:3,0:3],np.transpose(new_observed_pts)) + np.tile(camera2robot[0:3,3:],(1,new_observed_pts.shape[0])))
 
-        ax.scatter(t_new_observed_pts[:,0],t_new_observed_pts[:,1],t_new_observed_pts[:,2], c='green')
+        # ax.scatter(t_new_observed_pts[:,0],t_new_observed_pts[:,1],t_new_observed_pts[:,2], c='green')
 
-        plt.show()
+        # plt.show()

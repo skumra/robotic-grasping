@@ -21,6 +21,9 @@ class CameraData:
         if include_depth is False and include_rgb is False:
             raise ValueError('At least one of Depth or RGB must be specified.')
 
+        self.bottom_right = (510, 790)
+        self.top_left = (210, 490)
+
     @staticmethod
     def numpy_to_torch(s):
         if len(s.shape) == 2:
@@ -30,14 +33,16 @@ class CameraData:
 
     def get_depth(self, img):
         depth_img = image.Image(img)
+        depth_img.crop(bottom_right=self.bottom_right, top_left=self.top_left)
         depth_img.normalise()
-        depth_img.resize((self.output_size, self.output_size))
+        # depth_img.resize((self.output_size, self.output_size))
         depth_img.img = depth_img.img.transpose((2, 0, 1))
         return depth_img.img
 
     def get_rgb(self, img, norm=True):
         rgb_img = image.Image(img)
-        rgb_img.resize((self.output_size, self.output_size))
+        rgb_img.crop(bottom_right=self.bottom_right, top_left=self.top_left)
+        # rgb_img.resize((self.output_size, self.output_size))
         if norm:
                 rgb_img.normalise()
                 rgb_img.img = rgb_img.img.transpose((2, 0, 1))

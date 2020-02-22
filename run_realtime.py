@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate network')
-    parser.add_argument('--network', type=str, default='epoch_07_iou_0.96', help='Path to saved network to evaluate')
+    parser.add_argument('--network', type=str, default='saved_data/cornell_rgbd_iou_0.95', help='Path to saved network to evaluate')
     parser.add_argument('--use-depth', type=int, default=1, help='Use Depth image for evaluation (1/0)')
     parser.add_argument('--use-rgb', type=int, default=1, help='Use RGB image for evaluation (1/0)')
     parser.add_argument('--n-grasps', type=int, default=1, help='Number of grasps to consider per image')
