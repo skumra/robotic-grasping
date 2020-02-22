@@ -8,7 +8,13 @@ class CameraData:
     """
     Dataset wrapper for the camera data.
     """
-    def __init__(self, output_size=300, include_depth=True, include_rgb=True):
+    def __init__(self,
+                 width=640,
+                 height=480,
+                 output_size=300,
+                 include_depth=True,
+                 include_rgb=True
+                 ):
         """
         :param output_size: Image output size in pixels (square)
         :param include_depth: Whether depth image is included
@@ -21,8 +27,13 @@ class CameraData:
         if include_depth is False and include_rgb is False:
             raise ValueError('At least one of Depth or RGB must be specified.')
 
-        self.bottom_right = (510, 790)
-        self.top_left = (210, 490)
+        left = (width - output_size) / 2
+        top = (height - output_size) / 2
+        right = (width + output_size) / 2
+        bottom = (height + output_size) / 2
+
+        self.bottom_right = (bottom, right)
+        self.top_left = (top, left)
 
     @staticmethod
     def numpy_to_torch(s):
