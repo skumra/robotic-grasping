@@ -123,7 +123,7 @@ class Calibration:
             while not np.load(self.move_completed):
                 time.sleep(0.1)
             #wait for robot to be stable    
-            time.sleep(1)
+            time.sleep(2)
 
             # Find checkerboard center
             checkerboard_size = (3, 3)
@@ -158,7 +158,7 @@ class Calibration:
 
                 # Draw and display the corners
                 vis = cv2.drawChessboardCorners(bgr_color_data, (1, 1), corners_refined[4, :, :], checkerboard_found)
-                cv2.imwrite('%06d.png' % len(self.measured_pts), vis)
+                # cv2.imwrite('%06d.png' % len(self.measured_pts), vis)
                 cv2.imshow('Calibration', vis)
                 cv2.waitKey(10)
             else:
@@ -177,7 +177,8 @@ class Calibration:
         # Save camera optimized offset and camera pose
         print('Saving...')
         np.savetxt('saved_data/camera_depth_scale.txt', camera_depth_offset, delimiter=' ')
-        self._get_rigid_transform_error(camera_depth_offset)
+        rmse = self._get_rigid_transform_error(camera_depth_offset)
+        print('RMSE: ', rmse)
         camera_pose = np.linalg.inv(self.world2camera)
         np.savetxt('saved_data/camera_pose.txt', camera_pose, delimiter=' ')
         print('Done.')
