@@ -27,10 +27,10 @@ class CameraData:
         if include_depth is False and include_rgb is False:
             raise ValueError('At least one of Depth or RGB must be specified.')
 
-        left = (width - output_size) / 2
-        top = (height - output_size) / 2
-        right = (width + output_size) / 2
-        bottom = (height + output_size) / 2
+        left = (width - output_size) // 2
+        top = (height - output_size) // 2
+        right = (width + output_size) // 2
+        bottom = (height + output_size) // 2
 
         self.bottom_right = (bottom, right)
         self.top_left = (top, left)
