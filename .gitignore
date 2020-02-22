@@ -103,3 +103,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 /docker/
+
+results/
+
+saved_data/
+
+*.pyc
