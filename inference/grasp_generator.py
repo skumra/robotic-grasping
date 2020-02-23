@@ -81,9 +81,12 @@ class GraspGenerator:
         target_position = target_position[0:3, 0]
 
         # Convert camera to robot angle
-        target_angle = grasp.angle + np.pi
+        angle = np.asarray([0, 0, grasp.angle])
+        angle.shape = (3, 1)
+        target_angle = np.dot(camera2robot[0:3, 0:3], angle)
 
-        grasp_pose = np.append(target_position, target_angle)
+        # Concatenate grasp pose with grasp angle
+        grasp_pose = np.append(target_position, target_angle[2])
 
         print('grasp_pose: ', grasp_pose)
 
