@@ -1,4 +1,5 @@
 import warnings
+from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -76,7 +77,9 @@ def plot_results(
 
 def plot_grasp(
         fig,
-        rgb_img,
+        grasps=None,
+        save=False,
+        rgb_img=None,
         grasp_q_img=None,
         grasp_angle_img=None,
         no_grasps=1,
@@ -85,6 +88,8 @@ def plot_grasp(
     """
     Plot the output grasp of a network
     :param fig: Figure to plot the output
+    :param grasps: grasp pose(s)
+    :param save: Bool for saving the plot
     :param rgb_img: RGB Image
     :param grasp_q_img: Q output of network
     :param grasp_angle_img: Angle output of network
@@ -92,14 +97,15 @@ def plot_grasp(
     :param grasp_width_img: (optional) Width output of network
     :return:
     """
-    gs = detect_grasps(grasp_q_img, grasp_angle_img, width_img=grasp_width_img, no_grasps=no_grasps)
+    if grasps is None:
+        grasps = detect_grasps(grasp_q_img, grasp_angle_img, width_img=grasp_width_img, no_grasps=no_grasps)
 
     plt.ion()
     plt.clf()
 
     ax = plt.subplot(111)
     ax.imshow(rgb_img)
-    for g in gs:
+    for g in grasps:
         g.plot(ax)
     ax.set_title('Grasp')
     ax.axis('off')
@@ -107,11 +113,14 @@ def plot_grasp(
     plt.pause(0.1)
     fig.canvas.draw()
 
+    if save:
+        time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        fig.savefig('results/{}.png'.format(time))
+
 
 def save_results(rgb_img, grasp_q_img, grasp_angle_img, depth_img=None, no_grasps=1, grasp_width_img=None):
     """
     Plot the output of a network
-    :param fig: Figure to plot the output
     :param rgb_img: RGB Image
     :param depth_img: Depth Image
     :param grasp_q_img: Q output of network

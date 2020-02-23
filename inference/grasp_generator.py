@@ -93,11 +93,7 @@ class GraspGenerator:
         np.save(self.grasp_pose, grasp_pose)
 
         if self.fig:
-            plot_grasp(fig=self.fig,
-                       rgb_img=self.cam_data.get_rgb(rgb, False),
-                       grasp_q_img=q_img,
-                       grasp_angle_img=ang_img,
-                       grasp_width_img=width_img)
+            plot_grasp(fig=self.fig, grasps=grasp, save=True)
 
     def run(self):
         while True:
