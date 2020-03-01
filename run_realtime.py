@@ -8,14 +8,14 @@ import torch.utils.data
 from hardware.camera import RealSenseCamera
 from inference.post_process import post_process_output
 from utils.data.camera_data import CameraData
-from utils.visualisation.plot import save_results, plot_grasp
+from utils.visualisation.plot import save_results, plot_results
 
 logging.basicConfig(level=logging.INFO)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate network')
-    parser.add_argument('--network', type=str, default='saved_data/cornell_rgbd_iou_0.95', help='Path to saved network to evaluate')
+    parser.add_argument('--network', type=str, default='saved_data/cornell_rgbd_iou_0.96', help='Path to saved network to evaluate')
     parser.add_argument('--use-depth', type=int, default=1, help='Use Depth image for evaluation (1/0)')
     parser.add_argument('--use-rgb', type=int, default=1, help='Use RGB image for evaluation (1/0)')
     parser.add_argument('--n-grasps', type=int, default=1, help='Number of grasps to consider per image')
@@ -53,8 +53,9 @@ if __name__ == '__main__':
 
                 q_img, ang_img, width_img = post_process_output(pred['pos'], pred['cos'], pred['sin'], pred['width'])
 
-                plot_grasp(fig=fig,
+                plot_results(fig=fig,
                            rgb_img=cam_data.get_rgb(rgb, False),
+                           depth_img=np.squeeze(cam_data.get_depth(depth)),
                            grasp_q_img=q_img,
                            grasp_angle_img=ang_img,
                            no_grasps=args.n_grasps,
