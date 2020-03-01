@@ -58,15 +58,12 @@ class GraspGenerator:
             pred = self.model.predict(xc)
 
         q_img, ang_img, width_img = post_process_output(pred['pos'], pred['cos'], pred['sin'], pred['width'])
-        grasp = detect_grasps(q_img, ang_img, width_img)[0]
-
-        print('Grasp x: ', grasp.center[1])
-        print('Grasp y: ', grasp.center[0])
+        grasps = detect_grasps(q_img, ang_img, width_img)
 
         # Get grasp position from model output
-        pos_z = depth[grasp.center[0], grasp.center[1]] * self.cam_depth_scale
-        pos_x = np.multiply(grasp.center[1] + self.cam_data.top_left[1] - self.camera.intrinsics.ppx, pos_z / self.camera.intrinsics.fx)
-        pos_y = np.multiply(grasp.center[0] + self.cam_data.top_left[0] - self.camera.intrinsics.ppy, pos_z / self.camera.intrinsics.fy)
+        pos_z = depth[grasps[0].center[0], grasps[0].center[1]] * self.cam_depth_scale - 0.04
+        pos_x = np.multiply(grasps[0].center[1] + self.cam_data.top_left[1] - self.camera.intrinsics.ppx, pos_z / self.camera.intrinsics.fx)
+        pos_y = np.multiply(grasps[0].center[0] + self.cam_data.top_left[0] - self.camera.intrinsics.ppy, pos_z / self.camera.intrinsics.fy)
         
         if pos_z == 0:
             return
@@ -81,7 +78,7 @@ class GraspGenerator:
         target_position = target_position[0:3, 0]
 
         # Convert camera to robot angle
-        angle = np.asarray([0, 0, grasp.angle])
+        angle = np.asarray([0, 0, grasps[0].angle])
         angle.shape = (3, 1)
         target_angle = np.dot(camera2robot[0:3, 0:3], angle)
 
@@ -93,7 +90,7 @@ class GraspGenerator:
         np.save(self.grasp_pose, grasp_pose)
 
         if self.fig:
-            plot_grasp(fig=self.fig, grasps=grasp, save=True)
+            plot_grasp(fig=self.fig, rgb_img=self.cam_data.get_rgb(rgb, False), grasps=grasps, save=True)
 
     def run(self):
         while True:
