@@ -38,11 +38,9 @@ def plot_results(
     ax.set_title('RGB')
     ax.axis('off')
 
-    if depth_img:
+    if depth_img is not None:
         ax = fig.add_subplot(2, 3, 2)
         ax.imshow(depth_img, cmap='gray')
-        for g in gs:
-            g.plot(ax)
         ax.set_title('Depth')
         ax.axis('off')
 
