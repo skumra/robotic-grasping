@@ -3,9 +3,11 @@ We present a novel generative residual convolutional neural network based model 
 
 This repository contains the implementation of the Generative Residual Convolutional Neural Network (GR-ConvNet) from the paper:
 
-### Antipodal Robotic Grasping using Generative Residual Convolutional Neural Network
+#### Antipodal Robotic Grasping using Generative Residual Convolutional Neural Network
 
 Sulabh Kumra, Shirin Joshi, Ferat Sahin
+
+[arxiv](https://arxiv.org/abs/1909.04810)
 
 If you use this project in your research or wish to refer to the baseline results published in the paper, please use the following BibTeX entry:
 
@@ -59,3 +61,6 @@ Run the relevant task using the run programs. For example, to run the grasp gene
 ```bash
 python run_grasp_generator.py
 ```
+
+## Run on a Robot
+Our ROS implementation for running the grasp generator with Baxter robot is available at: https://github.com/skumra/baxter-pnp
