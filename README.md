@@ -7,7 +7,7 @@ This repository contains the implementation of the Generative Residual Convoluti
 
 Sulabh Kumra, Shirin Joshi, Ferat Sahin
 
-[arxiv](https://arxiv.org/abs/1909.04810) | video [https://youtu.be/cwlEhdoxY4U]
+[arxiv](https://arxiv.org/abs/1909.04810) | [video](https://youtu.be/cwlEhdoxY4U)
 
 If you use this project in your research or wish to refer to the baseline results published in the paper, please use the following BibTeX entry:
 
