@@ -1,5 +1,6 @@
 import argparse
 import datetime
+import json
 import logging
 import os
 import sys
@@ -18,8 +19,6 @@ from utils.data import get_dataset
 from utils.dataset_processing import evaluation
 from utils.visualisation.gridshow import gridshow
 
-logging.basicConfig(level=logging.INFO)
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train network')
@@ -30,19 +29,16 @@ def parse_args():
     parser.add_argument('--use-depth', type=int, default=1, help='Use Depth image for training (1/0)')
     parser.add_argument('--use-rgb', type=int, default=0, help='Use RGB image for training (0/1)')
     parser.add_argument('--split', type=float, default=0.9, help='Fraction of data for training (remainder is validation)')
-    parser.add_argument('--ds-rotate', type=float, default=0.0,
-                        help='Shift the start point of the dataset to use a different test/train split for cross validation.')
+    parser.add_argument('--ds-rotate', type=float, default=0.0, help='Shift the start point of the dataset to use a different test/train split for cross validation.')
     parser.add_argument('--num-workers', type=int, default=8, help='Dataset workers')
-
     parser.add_argument('--batch-size', type=int, default=8, help='Batch size')
-    parser.add_argument('--epochs', type=int, default=50, help='Training epochs')
+    parser.add_argument('--epochs', type=int, default=30, help='Training epochs')
     parser.add_argument('--batches-per-epoch', type=int, default=1000, help='Batches per Epoch')
     parser.add_argument('--val-batches', type=int, default=250, help='Validation Batches')
 
     # Logging etc.
     parser.add_argument('--description', type=str, default='', help='Training description')
-    parser.add_argument('--outdir', type=str, default='output/models/', help='Training Output Directory')
-    parser.add_argument('--logdir', type=str, default='tensorboard/', help='Log directory')
+    parser.add_argument('--logdir', type=str, default='logs/', help='Log directory')
     parser.add_argument('--vis', action='store_true', help='Visualise the training process')
     parser.add_argument('--cpu', dest='force_cpu', action='store_true', default=False, help='force code to run in CPU mode')
 
@@ -182,10 +178,34 @@ def run():
     dt = datetime.datetime.now().strftime('%y%m%d_%H%M')
     net_desc = '{}_{}'.format(dt, '_'.join(args.description.split()))
 
-    save_folder = os.path.join(args.outdir, net_desc)
+    save_folder = os.path.join(args.logdir, net_desc)
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
-    tb = tensorboardX.SummaryWriter(os.path.join(args.logdir, net_desc))
+    tb = tensorboardX.SummaryWriter(save_folder)
+
+    # Save commandline args
+    if args is not None:
+        params_path = os.path.join(save_folder, 'commandline_args.json')
+        with open(params_path, 'w') as f:
+            json.dump(vars(args), f)
+
+    # Initialize logging
+    logging.root.handlers = []
+    logging.basicConfig(
+        level=logging.INFO,
+        filename="{0}/{1}.log".format(save_folder, 'log'),
+        format='[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
+        datefmt='%H:%M:%S'
+    )
+    # set up logging to console
+    console = logging.StreamHandler()
+    console.setLevel(logging.DEBUG)
+    # set a format which is simpler for console use
+    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+    console.setFormatter(formatter)
+    # add the handler to the root logger
+    logging.getLogger('').addHandler(console)
+
     # Get the compute device
     device = get_device(args.force_cpu)
 
