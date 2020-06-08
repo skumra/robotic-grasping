@@ -12,6 +12,7 @@ import torch.utils.data
 from torchsummary import summary
 
 from inference.model import GenerativeResnet
+from hardware.device import get_device
 from inference.post_process import post_process_output
 from utils.data import get_dataset
 from utils.dataset_processing import evaluation
@@ -43,6 +44,7 @@ def parse_args():
     parser.add_argument('--outdir', type=str, default='output/models/', help='Training Output Directory')
     parser.add_argument('--logdir', type=str, default='tensorboard/', help='Log directory')
     parser.add_argument('--vis', action='store_true', help='Visualise the training process')
+    parser.add_argument('--cpu', dest='force_cpu', action='store_true', default=False, help='force code to run in CPU mode')
 
     args = parser.parse_args()
     return args
@@ -184,6 +186,8 @@ def run():
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
     tb = tensorboardX.SummaryWriter(os.path.join(args.logdir, net_desc))
+    # Get the compute device
+    device = get_device(args.force_cpu)
 
     # Load Dataset
     logging.info('Loading {} Dataset...'.format(args.dataset.title()))
@@ -224,7 +228,6 @@ def run():
     input_channels = 1*args.use_depth + 3*args.use_rgb
 
     net = GenerativeResnet(input_channels=input_channels)
-    device = torch.device("cuda:0")
     net = net.to(device)
     optimizer = optim.Adam(net.parameters())
     logging.info('Done')

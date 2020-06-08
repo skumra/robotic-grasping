@@ -6,6 +6,7 @@ import numpy as np
 import torch.utils.data
 
 from hardware.camera import RealSenseCamera
+from hardware.device import get_device
 from inference.post_process import post_process_output
 from utils.data.camera_data import CameraData
 from utils.visualisation.plot import save_results, plot_results
@@ -19,6 +20,7 @@ def parse_args():
     parser.add_argument('--use-depth', type=int, default=1, help='Use Depth image for evaluation (1/0)')
     parser.add_argument('--use-rgb', type=int, default=1, help='Use RGB image for evaluation (1/0)')
     parser.add_argument('--n-grasps', type=int, default=1, help='Number of grasps to consider per image')
+    parser.add_argument('--cpu', dest='force_cpu', action='store_true', default=False, help='force code to run in CPU mode')
 
     args = parser.parse_args()
     return args
@@ -36,9 +38,10 @@ if __name__ == '__main__':
     # Load Network
     logging.info('Loading model...')
     net = torch.load(args.network)
-    device = torch.device("cuda:0")
-
     logging.info('Done')
+
+    # Get the compute device
+    device = get_device(args.force_cpu)
 
     try:
         fig = plt.figure(figsize=(10, 10))

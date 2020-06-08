@@ -3,6 +3,7 @@ import logging
 
 import torch.utils.data
 
+from hardware.device import get_device
 from inference.post_process import post_process_output
 from utils.data import get_dataset
 from utils.dataset_processing import evaluation, grasp
@@ -32,6 +33,7 @@ def parse_args():
     parser.add_argument('--iou-eval', action='store_true', help='Compute success based on IoU metric.')
     parser.add_argument('--jacquard-output', action='store_true', help='Jacquard-dataset style output')
     parser.add_argument('--vis', action='store_true', help='Visualise the network output')
+    parser.add_argument('--cpu', dest='force_cpu', action='store_true', default=False, help='force code to run in CPU mode')
 
     args = parser.parse_args()
 
@@ -46,9 +48,11 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
+    # Get the compute device
+    device = get_device(args.force_cpu)
+
     # Load Network
     net = torch.load(args.network)
-    device = torch.device("cuda:0")
 
     # Load Dataset
     logging.info('Loading {} Dataset...'.format(args.dataset.title()))
