@@ -25,11 +25,11 @@ def parse_args():
     parser.add_argument('--use-rgb', type=int, default=1, help='Use RGB image for evaluation (1/0)')
     parser.add_argument('--augment', action='store_true', help='Whether data augmentation should be applied')
     parser.add_argument('--split', type=float, default=0.9, help='Fraction of data for training (remainder is validation)')
-    parser.add_argument('--ds-rotate', type=float, default=0.0,
-                        help='Shift the start point of the dataset to use a different test/train split')
+    parser.add_argument('--ds-rotate', type=float, default=0.0, help='Shift the start point of the dataset to use a different test/train split')
     parser.add_argument('--num-workers', type=int, default=8, help='Dataset workers')
 
     parser.add_argument('--n-grasps', type=int, default=1, help='Number of grasps to consider per image')
+    parser.add_argument('--iou-threshold', type=float, default=0.25, help='Threshold for IOU matching')
     parser.add_argument('--iou-eval', action='store_true', help='Compute success based on IoU metric.')
     parser.add_argument('--jacquard-output', action='store_true', help='Jacquard-dataset style output')
     parser.add_argument('--vis', action='store_true', help='Visualise the network output')
@@ -89,6 +89,7 @@ if __name__ == '__main__':
                 s = evaluation.calculate_iou_match(q_img, ang_img, test_data.dataset.get_gtbb(didx, rot, zoom),
                                                    no_grasps=args.n_grasps,
                                                    grasp_width=width_img,
+                                                   threshold=args.iou_threshold
                                                    )
                 if s:
                     results['correct'] += 1
