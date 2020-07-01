@@ -14,11 +14,12 @@ Sulabh Kumra, Shirin Joshi, Ferat Sahin
 If you use this project in your research or wish to refer to the baseline results published in the paper, please use the following BibTeX entry:
 
 ```
-@article{kumra2019antipodal,
+@inproceedings{kumra2019antipodal,
   title={Antipodal Robotic Grasping using Generative Residual Convolutional Neural Network},
   author={Kumra, Sulabh and Joshi, Shirin and Sahin, Ferat},
-  journal={arXiv preprint arXiv:1909.04810},
-  year={2019}
+  booktitle={2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  year={2020},
+  organization={IEEE}
 }
 ```
 
