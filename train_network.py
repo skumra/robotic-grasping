@@ -35,6 +35,7 @@ def parse_args():
     parser.add_argument('--epochs', type=int, default=30, help='Training epochs')
     parser.add_argument('--batches-per-epoch', type=int, default=1000, help='Batches per Epoch')
     parser.add_argument('--val-batches', type=int, default=250, help='Validation Batches')
+    parser.add_argument('--optim', type=str, default='adam', help='Optmizer for the training. (adam or SGD)')
 
     # Logging etc.
     parser.add_argument('--description', type=str, default='', help='Training description')
@@ -249,8 +250,14 @@ def run():
 
     net = GenerativeResnet(input_channels=input_channels)
     net = net.to(device)
-    optimizer = optim.Adam(net.parameters())
     logging.info('Done')
+
+    if args.optim.lower() == 'adam':
+        optimizer = optim.Adam(net.parameters())
+    elif args.optim.lower() == 'sgd':
+        optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
+    else:
+        raise NotImplementedError('Optimizer {} is not implemented'.format(args.optim))
 
     # Print model architecture.
     summary(net, (input_channels, 300, 300))
