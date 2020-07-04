@@ -11,7 +11,7 @@ class CameraData:
     def __init__(self,
                  width=640,
                  height=480,
-                 output_size=300,
+                 output_size=224,
                  include_depth=True,
                  include_rgb=True
                  ):

@@ -260,10 +260,10 @@ def run():
         raise NotImplementedError('Optimizer {} is not implemented'.format(args.optim))
 
     # Print model architecture.
-    summary(net, (input_channels, 300, 300))
+    summary(net, (input_channels, 224, 224))
     f = open(os.path.join(save_folder, 'arch.txt'), 'w')
     sys.stdout = f
-    summary(net, (input_channels, 300, 300))
+    summary(net, (input_channels, 224, 224))
     sys.stdout = sys.__stdout__
     f.close()
 

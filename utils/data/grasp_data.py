@@ -9,7 +9,7 @@ class GraspDatasetBase(torch.utils.data.Dataset):
     """
     An abstract dataset for training networks in a common format.
     """
-    def __init__(self, output_size=300, include_depth=True, include_rgb=False, random_rotate=False,
+    def __init__(self, output_size=224, include_depth=True, include_rgb=False, random_rotate=False,
                  random_zoom=False, input_only=False):
         """
         :param output_size: Image output size in pixels (square)
@@ -71,7 +71,7 @@ class GraspDatasetBase(torch.utils.data.Dataset):
         bbs = self.get_gtbb(idx, rot, zoom_factor)
 
         pos_img, ang_img, width_img = bbs.draw((self.output_size, self.output_size))
-        width_img = np.clip(width_img, 0.0, 150.0)/150.0
+        width_img = np.clip(width_img, 0.0, self.output_size/2)/(self.output_size/2)
 
         if self.include_depth and self.include_rgb:
             x = self.numpy_to_torch(
