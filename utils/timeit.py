@@ -24,7 +24,7 @@ class TimeIt:
 
     def __exit__(self, t, value, traceback):
         self.t1 = time.time()
-        st = '%s%s: %0.1fms' % ('  ' * TimeIt.level, self.s, (self.t1 - self.t0)*1000)
+        st = '%s%s: %0.1fms' % ('  ' * TimeIt.level, self.s, (self.t1 - self.t0) * 1000)
         TimeIt.level -= 1
 
         if self.parent:

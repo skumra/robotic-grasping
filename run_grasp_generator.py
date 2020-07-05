@@ -1,6 +1,5 @@
 from inference.grasp_generator import GraspGenerator
 
-
 if __name__ == '__main__':
     generator = GraspGenerator(
         cam_id=830112070066,

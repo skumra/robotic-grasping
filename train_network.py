@@ -110,11 +110,11 @@ def validate(net, device, val_data, batches_per_epoch):
 
                 loss = lossd['loss']
 
-                results['loss'] += loss.item()/ld
+                results['loss'] += loss.item() / ld
                 for ln, l in lossd['losses'].items():
                     if ln not in results['losses']:
                         results['losses'][ln] = 0
-                    results['losses'][ln] += l.item()/ld
+                    results['losses'][ln] += l.item() / ld
 
                 q_out, ang_out, w_out = post_process_output(lossd['pred']['pos'], lossd['pred']['cos'],
                                                             lossd['pred']['sin'], lossd['pred']['width'])
@@ -186,9 +186,11 @@ def train(epoch, net, device, train_data, optimizer, batches_per_epoch, vis=Fals
                 n_img = min(4, x.shape[0])
                 for idx in range(n_img):
                     imgs.extend([x[idx,].numpy().squeeze()] + [yi[idx,].numpy().squeeze() for yi in y] + [
-                        x[idx,].numpy().squeeze()] + [pc[idx,].detach().cpu().numpy().squeeze() for pc in lossd['pred'].values()])
+                        x[idx,].numpy().squeeze()] + [pc[idx,].detach().cpu().numpy().squeeze() for pc in
+                                                      lossd['pred'].values()])
                 gridshow('Display', imgs,
-                         [(xc.min().item(), xc.max().item()), (0.0, 1.0), (0.0, 1.0), (-1.0, 1.0), (0.0, 1.0)] * 2 * n_img,
+                         [(xc.min().item(), xc.max().item()), (0.0, 1.0), (0.0, 1.0), (-1.0, 1.0),
+                          (0.0, 1.0)] * 2 * n_img,
                          [cv2.COLORMAP_BONE] * 10 * n_img, 10)
                 cv2.waitKey(2)
 
@@ -273,7 +275,7 @@ def run():
 
     # Load the network
     logging.info('Loading Network...')
-    input_channels = 1*args.use_depth + 3*args.use_rgb
+    input_channels = 1 * args.use_depth + 3 * args.use_rgb
     network = get_network(args.network)
     net = network(
         input_channels=input_channels,
@@ -314,7 +316,7 @@ def run():
         logging.info('Validating...')
         test_results = validate(net, device, val_data, args.val_batches)
         logging.info('%d/%d = %f' % (test_results['correct'], test_results['correct'] + test_results['failed'],
-                                     test_results['correct']/(test_results['correct']+test_results['failed'])))
+                                     test_results['correct'] / (test_results['correct'] + test_results['failed'])))
 
         # Log validation results to tensorbaord
         tb.add_scalar('loss/IOU', test_results['correct'] / (test_results['correct'] + test_results['failed']), epoch)

@@ -9,6 +9,7 @@ class GraspDatasetBase(torch.utils.data.Dataset):
     """
     An abstract dataset for training networks in a common format.
     """
+
     def __init__(self, output_size=224, include_depth=True, include_rgb=False, random_rotate=False,
                  random_zoom=False, input_only=False):
         """
@@ -49,7 +50,7 @@ class GraspDatasetBase(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         if self.random_rotate:
-            rotations = [0, np.pi/2, 2*np.pi/2, 3*np.pi/2]
+            rotations = [0, np.pi / 2, 2 * np.pi / 2, 3 * np.pi / 2]
             rot = random.choice(rotations)
         else:
             rot = 0.0
@@ -71,7 +72,7 @@ class GraspDatasetBase(torch.utils.data.Dataset):
         bbs = self.get_gtbb(idx, rot, zoom_factor)
 
         pos_img, ang_img, width_img = bbs.draw((self.output_size, self.output_size))
-        width_img = np.clip(width_img, 0.0, self.output_size/2)/(self.output_size/2)
+        width_img = np.clip(width_img, 0.0, self.output_size / 2) / (self.output_size / 2)
 
         if self.include_depth and self.include_rgb:
             x = self.numpy_to_torch(
@@ -87,8 +88,8 @@ class GraspDatasetBase(torch.utils.data.Dataset):
             x = self.numpy_to_torch(rgb_img)
 
         pos = self.numpy_to_torch(pos_img)
-        cos = self.numpy_to_torch(np.cos(2*ang_img))
-        sin = self.numpy_to_torch(np.sin(2*ang_img))
+        cos = self.numpy_to_torch(np.cos(2 * ang_img))
+        sin = self.numpy_to_torch(np.sin(2 * ang_img))
         width = self.numpy_to_torch(width_img)
 
         return x, (pos, cos, sin, width), idx, rot, zoom_factor

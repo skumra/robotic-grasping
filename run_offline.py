@@ -16,14 +16,22 @@ logging.basicConfig(level=logging.INFO)
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate network')
-    parser.add_argument('--network', type=str, default='cornell_rgbd_iou_0.95', help='Path to saved network to evaluate')
-    parser.add_argument('--rgb_path', type=str, default='cornell/08/pcd0845r.png', help='RGB Image path')
-    parser.add_argument('--depth_path', type=str, default='cornell/08/pcd0845d.tiff', help='Depth Image path')
-    parser.add_argument('--use-depth', type=int, default=1, help='Use Depth image for evaluation (1/0)')
-    parser.add_argument('--use-rgb', type=int, default=1, help='Use RGB image for evaluation (1/0)')
-    parser.add_argument('--n-grasps', type=int, default=1, help='Number of grasps to consider per image')
-    parser.add_argument('--save', type=int, default=0, help='Save the results')
-    parser.add_argument('--cpu', dest='force_cpu', action='store_true', default=False, help='force code to run in CPU mode')
+    parser.add_argument('--network', type=str, default='cornell_rgbd_iou_0.95',
+                        help='Path to saved network to evaluate')
+    parser.add_argument('--rgb_path', type=str, default='cornell/08/pcd0845r.png',
+                        help='RGB Image path')
+    parser.add_argument('--depth_path', type=str, default='cornell/08/pcd0845d.tiff',
+                        help='Depth Image path')
+    parser.add_argument('--use-depth', type=int, default=1,
+                        help='Use Depth image for evaluation (1/0)')
+    parser.add_argument('--use-rgb', type=int, default=1,
+                        help='Use RGB image for evaluation (1/0)')
+    parser.add_argument('--n-grasps', type=int, default=1,
+                        help='Number of grasps to consider per image')
+    parser.add_argument('--save', type=int, default=0,
+                        help='Save the results')
+    parser.add_argument('--cpu', dest='force_cpu', action='store_true', default=False,
+                        help='Force code to run in CPU mode')
 
     args = parser.parse_args()
     return args

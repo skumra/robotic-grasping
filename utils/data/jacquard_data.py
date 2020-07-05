@@ -9,6 +9,7 @@ class JacquardDataset(GraspDatasetBase):
     """
     Dataset wrapper for the Jacquard dataset.
     """
+
     def __init__(self, file_path, start=0.0, end=1.0, ds_rotate=0, **kwargs):
         """
         :param file_path: Jacquard Dataset directory.
@@ -27,18 +28,18 @@ class JacquardDataset(GraspDatasetBase):
             raise FileNotFoundError('No dataset files found. Check path: {}'.format(file_path))
 
         if ds_rotate:
-            graspf = graspf[int(l*ds_rotate):] + graspf[:int(l*ds_rotate)]
+            graspf = graspf[int(l * ds_rotate):] + graspf[:int(l * ds_rotate)]
 
         depthf = [f.replace('grasps.txt', 'perfect_depth.tiff') for f in graspf]
         rgbf = [f.replace('perfect_depth.tiff', 'RGB.png') for f in depthf]
 
-        self.grasp_files = graspf[int(l*start):int(l*end)]
-        self.depth_files = depthf[int(l*start):int(l*end)]
-        self.rgb_files = rgbf[int(l*start):int(l*end)]
+        self.grasp_files = graspf[int(l * start):int(l * end)]
+        self.depth_files = depthf[int(l * start):int(l * end)]
+        self.rgb_files = rgbf[int(l * start):int(l * end)]
 
     def get_gtbb(self, idx, rot=0, zoom=1.0):
         gtbbs = grasp.GraspRectangles.load_from_jacquard_file(self.grasp_files[idx], scale=self.output_size / 1024.0)
-        c = self.output_size//2
+        c = self.output_size // 2
         gtbbs.rotate(rot, (c, c))
         gtbbs.zoom(zoom, (c, c))
         return gtbbs
