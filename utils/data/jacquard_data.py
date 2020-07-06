@@ -10,32 +10,27 @@ class JacquardDataset(GraspDatasetBase):
     Dataset wrapper for the Jacquard dataset.
     """
 
-    def __init__(self, file_path, start=0.0, end=1.0, ds_rotate=0, **kwargs):
+    def __init__(self, file_path, ds_rotate=0, **kwargs):
         """
         :param file_path: Jacquard Dataset directory.
-        :param start: If splitting the dataset, start at this fraction [0,1]
-        :param end: If splitting the dataset, finish at this fraction
         :param ds_rotate: If splitting the dataset, rotate the list of items by this fraction first
         :param kwargs: kwargs for GraspDatasetBase
         """
         super(JacquardDataset, self).__init__(**kwargs)
 
-        graspf = glob.glob(os.path.join(file_path, '*', '*_grasps.txt'))
-        graspf.sort()
-        l = len(graspf)
+        self.grasp_files = glob.glob(os.path.join(file_path, '*', '*_grasps.txt'))
+        self.grasp_files.sort()
+        self.length = len(self.grasp_files)
 
-        if l == 0:
+        if self.length == 0:
             raise FileNotFoundError('No dataset files found. Check path: {}'.format(file_path))
 
         if ds_rotate:
-            graspf = graspf[int(l * ds_rotate):] + graspf[:int(l * ds_rotate)]
+            self.grasp_files = self.grasp_files[int(self.length * ds_rotate):] + self.grasp_files[
+                                                                                 :int(self.length * ds_rotate)]
 
-        depthf = [f.replace('grasps.txt', 'perfect_depth.tiff') for f in graspf]
-        rgbf = [f.replace('perfect_depth.tiff', 'RGB.png') for f in depthf]
-
-        self.grasp_files = graspf[int(l * start):int(l * end)]
-        self.depth_files = depthf[int(l * start):int(l * end)]
-        self.rgb_files = rgbf[int(l * start):int(l * end)]
+        self.depth_files = [f.replace('grasps.txt', 'perfect_depth.tiff') for f in self.grasp_files]
+        self.rgb_files = [f.replace('perfect_depth.tiff', 'RGB.png') for f in self.depth_files]
 
     def get_gtbb(self, idx, rot=0, zoom=1.0):
         gtbbs = grasp.GraspRectangles.load_from_jacquard_file(self.grasp_files[idx], scale=self.output_size / 1024.0)
