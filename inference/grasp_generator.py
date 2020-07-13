@@ -6,6 +6,7 @@ import numpy as np
 import torch
 
 from hardware.camera import RealSenseCamera
+from hardware.device import get_device
 from inference.post_process import post_process_output
 from utils.data.camera_data import CameraData
 from utils.dataset_processing.grasp import detect_grasps
@@ -43,7 +44,8 @@ class GraspGenerator:
     def load_model(self):
         print('Loading model... ')
         self.model = torch.load(self.saved_model_path)
-        self.device = torch.device("cuda:0")
+        # Get the compute device
+        self.device = get_device(force_cpu=False)
 
     def generate(self):
         # Get RGB-D image from camera
@@ -62,9 +64,11 @@ class GraspGenerator:
 
         # Get grasp position from model output
         pos_z = depth[grasps[0].center[0], grasps[0].center[1]] * self.cam_depth_scale - 0.04
-        pos_x = np.multiply(grasps[0].center[1] + self.cam_data.top_left[1] - self.camera.intrinsics.ppx, pos_z / self.camera.intrinsics.fx)
-        pos_y = np.multiply(grasps[0].center[0] + self.cam_data.top_left[0] - self.camera.intrinsics.ppy, pos_z / self.camera.intrinsics.fy)
-        
+        pos_x = np.multiply(grasps[0].center[1] + self.cam_data.top_left[1] - self.camera.intrinsics.ppx,
+                            pos_z / self.camera.intrinsics.fx)
+        pos_y = np.multiply(grasps[0].center[0] + self.cam_data.top_left[0] - self.camera.intrinsics.ppy,
+                            pos_z / self.camera.intrinsics.fy)
+
         if pos_z == 0:
             return
 

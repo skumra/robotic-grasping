@@ -54,7 +54,7 @@ def plot_output(fig, rgb_img, grasp_q_img, grasp_angle_img, depth_img=None, no_g
     fig.canvas.draw()
 
 
-def calculate_iou_match(grasp_q, grasp_angle, ground_truth_bbs, no_grasps=1, grasp_width=None):
+def calculate_iou_match(grasp_q, grasp_angle, ground_truth_bbs, no_grasps=1, grasp_width=None, threshold=0.25):
     """
     Calculate grasp success using the IoU (Jacquard) metric (e.g. in https://arxiv.org/abs/1301.3592)
     A success is counted if grasp rectangle has a 25% IoU with a ground truth, and is withing 30 degrees.
@@ -63,6 +63,7 @@ def calculate_iou_match(grasp_q, grasp_angle, ground_truth_bbs, no_grasps=1, gra
     :param ground_truth_bbs: Corresponding ground-truth BoundingBoxes
     :param no_grasps: Maximum number of grasps to consider per image.
     :param grasp_width: (optional) Width output from network
+    :param threshold: Threshold for IOU matching. Detect with IOU ≥ threshold
     :return: success
     """
 
@@ -72,7 +73,7 @@ def calculate_iou_match(grasp_q, grasp_angle, ground_truth_bbs, no_grasps=1, gra
         gt_bbs = ground_truth_bbs
     gs = detect_grasps(grasp_q, grasp_angle, width_img=grasp_width, no_grasps=no_grasps)
     for g in gs:
-        if g.max_iou(gt_bbs) > 0.25:
+        if g.max_iou(gt_bbs) > threshold:
             return True
     else:
         return False

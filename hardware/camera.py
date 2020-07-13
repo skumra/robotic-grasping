@@ -13,7 +13,6 @@ class RealSenseCamera:
                  width=640,
                  height=480,
                  fps=6):
-
         self.device_id = device_id
         self.width = width
         self.height = height
@@ -53,7 +52,7 @@ class RealSenseCamera:
 
         depth_image = np.expand_dims(depth_image, axis=2)
 
-        return{
+        return {
             'rgb': color_image,
             'aligned_depth': depth_image,
         }
@@ -79,4 +78,3 @@ if __name__ == '__main__':
     cam.connect()
     while True:
         cam.plot_image_bundle()
-

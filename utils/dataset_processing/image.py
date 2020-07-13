@@ -13,6 +13,7 @@ class Image:
     """
     Wrapper around an image with some convenient functions.
     """
+
     def __init__(self, img):
         self.img = img
 
@@ -53,7 +54,7 @@ class Image:
         """
         Normalise the image by converting to float [0,1] and zero-centering
         """
-        self.img = self.img.astype(np.float32)/255.0
+        self.img = self.img.astype(np.float32) / 255.0
         self.img -= self.img.mean()
 
     def resize(self, shape):
@@ -81,7 +82,8 @@ class Image:
         """
         if center is not None:
             center = (center[1], center[0])
-        self.img = rotate(self.img, angle/np.pi*180, center=center, mode='symmetric', preserve_range=True).astype(self.img.dtype)
+        self.img = rotate(self.img, angle / np.pi * 180, center=center, mode='symmetric', preserve_range=True).astype(
+            self.img.dtype)
 
     def rotated(self, *args, **kwargs):
         """
@@ -164,7 +166,7 @@ class DepthImage(Image):
                 else:
                     img[r, c] = float(ls[index])
 
-        return cls(img/1000.0)
+        return cls(img / 1000.0)
 
     @classmethod
     def from_tiff(cls, fname):
@@ -211,16 +213,17 @@ class WidthImage(Image):
     """
     A width image is one that describes the desired gripper width at each pixel.
     """
+
     def zoom(self, factor):
         """
         "Zoom" the image by cropping and resizing.  Also scales the width accordingly.
         :param factor: Factor to zoom by. e.g. 0.5 will keep the center 50% of the image.
         """
         super().zoom(factor)
-        self.img = self.img/factor
+        self.img = self.img / factor
 
     def normalise(self):
         """
         Normalise by mapping [0, 150] -> [0, 1]
         """
-        self.img = np.clip(self.img, 0, 150.0)/150.0
+        self.img = np.clip(self.img, 0, 150.0) / 150.0

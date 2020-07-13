@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 
@@ -21,6 +22,7 @@ class Calibration:
         self.calib_grid_step = calib_grid_step
         self.checkerboard_offset_from_tool = checkerboard_offset_from_tool
 
+        # Cols: min max, Rows: x y z (define workspace limits in robot coordinates)
         self.workspace_limits = workspace_limits
 
         self.camera = RealSenseCamera(device_id=cam_id)
@@ -108,21 +110,21 @@ class Calibration:
     def run(self):
         # Connect to camera
         self.camera.connect()
-        print(self.camera.intrinsics)
+        logging.debug(self.camera.intrinsics)
 
-        print('Collecting data...')
+        logging.info('Collecting data...')
 
         calib_grid_pts = self._generate_grid()
 
-        print('Total grid points: ', calib_grid_pts.shape[0])
+        logging.info('Total grid points: ', calib_grid_pts.shape[0])
 
         for tool_position in calib_grid_pts:
-            print('Requesting move to tool position: ', tool_position)
+            logging.info('Requesting move to tool position: ', tool_position)
             np.save(self.tool_position, tool_position)
             np.save(self.move_completed, 0)
             while not np.load(self.move_completed):
                 time.sleep(0.1)
-            #wait for robot to be stable    
+            # Wait for robot to be stable
             time.sleep(2)
 
             # Find checkerboard center
@@ -162,57 +164,23 @@ class Calibration:
                 cv2.imshow('Calibration', vis)
                 cv2.waitKey(10)
             else:
-                print('Checker board not found')
+                logging.info('Checker board not found')
 
         self.measured_pts = np.asarray(self.measured_pts)
         self.observed_pts = np.asarray(self.observed_pts)
         self.observed_pix = np.asarray(self.observed_pix)
 
         # Optimize z scale w.r.t. rigid transform error
-        print('Calibrating...')
+        logging.info('Calibrating...')
         z_scale_init = 1
         optim_result = optimize.minimize(self._get_rigid_transform_error, np.asarray(z_scale_init), method='Nelder-Mead')
         camera_depth_offset = optim_result.x
 
         # Save camera optimized offset and camera pose
-        print('Saving...')
+        logging.info('Saving...')
         np.savetxt('saved_data/camera_depth_scale.txt', camera_depth_offset, delimiter=' ')
         rmse = self._get_rigid_transform_error(camera_depth_offset)
-        print('RMSE: ', rmse)
+        logging.info('RMSE: ', rmse)
         camera_pose = np.linalg.inv(self.world2camera)
         np.savetxt('saved_data/camera_pose.txt', camera_pose, delimiter=' ')
-        print('Done.')
-
-        # ---------------------------------------------
-
-        # np.savetxt('saved_data/measured_pts.txt', self.measured_pts, delimiter=' ')
-        # np.savetxt('saved_data/observed_pts.txt', self.observed_pts, delimiter=' ')
-        # np.savetxt('saved_data/observed_pix.txt', self.observed_pix, delimiter=' ')
-        # measured_pts = np.loadtxt('saved_data/measured_pts.txt', delimiter=' ')
-        # observed_pts = np.loadtxt('saved_data/observed_pts.txt', delimiter=' ')
-        # observed_pix = np.loadtxt('saved_data/observed_pix.txt', delimiter=' ')
-
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        # ax.scatter(measured_pts[:,0],measured_pts[:,1],measured_pts[:,2], c='blue')
-
-        # print(camera_depth_offset)
-        # R, t = self._get_rigid_transform(np.asarray(measured_pts), np.asarray(observed_pts))
-        # t.shape = (3,1)
-        # camera_pose = np.concatenate((np.concatenate((R, t), axis=1),np.array([[0, 0, 0, 1]])), axis=0)
-        # camera2robot = np.linalg.inv(camera_pose)
-        # t_observed_pts = np.transpose(np.dot(camera2robot[0:3,0:3],np.transpose(observed_pts)) + np.tile(camera2robot[0:3,3:],(1,observed_pts.shape[0])))
-
-        # ax.scatter(t_observed_pts[:,0],t_observed_pts[:,1],t_observed_pts[:,2], c='red')
-
-        # new_observed_pts = observed_pts.copy()
-        # new_observed_pts[:,2] = new_observed_pts[:,2] * camera_depth_offset[0]
-        # R, t = self._get_rigid_transform(np.asarray(measured_pts), np.asarray(new_observed_pts))
-        # t.shape = (3,1)
-        # camera_pose = np.concatenate((np.concatenate((R, t), axis=1),np.array([[0, 0, 0, 1]])), axis=0)
-        # camera2robot = np.linalg.inv(camera_pose)
-        # t_new_observed_pts = np.transpose(np.dot(camera2robot[0:3,0:3],np.transpose(new_observed_pts)) + np.tile(camera2robot[0:3,3:],(1,new_observed_pts.shape[0])))
-
-        # ax.scatter(t_new_observed_pts[:,0],t_new_observed_pts[:,1],t_new_observed_pts[:,2], c='green')
-
-        # plt.show()
+        logging.info('Done.')
