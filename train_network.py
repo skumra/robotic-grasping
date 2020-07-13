@@ -25,14 +25,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Train network')
 
     # Network
-    parser.add_argument('--network', type=str, default='grconvnet',
+    parser.add_argument('--network', type=str, default='grconvnet3',
                         help='Network name in inference/models')
     parser.add_argument('--use-depth', type=int, default=1,
                         help='Use Depth image for training (1/0)')
     parser.add_argument('--use-rgb', type=int, default=1,
                         help='Use RGB image for training (1/0)')
-    parser.add_argument('--use-dropout', type=int, default=0,
-                        help='Use dropout for training (0/1)')
+    parser.add_argument('--use-dropout', type=int, default=1,
+                        help='Use dropout for training (1/0)')
     parser.add_argument('--dropout-prob', type=float, default=0.1,
                         help='Dropout prob for training (0-1)')
     parser.add_argument('--channel-size', type=int, default=32,
