@@ -116,7 +116,8 @@ def validate(net, device, val_data):
             q_out, ang_out, w_out = post_process_output(lossd['pred']['pos'], lossd['pred']['cos'],
                                                         lossd['pred']['sin'], lossd['pred']['width'])
 
-            s = evaluation.calculate_iou_match(q_out, ang_out,
+            s = evaluation.calculate_iou_match(q_out,
+                                               ang_out,
                                                val_data.dataset.get_gtbb(didx, rot, zoom_factor),
                                                no_grasps=1,
                                                grasp_width=w_out,

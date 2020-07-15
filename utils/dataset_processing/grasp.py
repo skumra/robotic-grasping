@@ -415,8 +415,8 @@ class Grasp:
         """
         # Output in jacquard format.
         return '%0.2f;%0.2f;%0.2f;%0.2f;%0.2f' % (
-        self.center[1] * scale, self.center[0] * scale, -1 * self.angle * 180 / np.pi, self.length * scale,
-        self.width * scale)
+            self.center[1] * scale, self.center[0] * scale, -1 * self.angle * 180 / np.pi, self.length * scale,
+            self.width * scale)
 
 
 def detect_grasps(q_img, ang_img, width_img=None, no_grasps=1):
