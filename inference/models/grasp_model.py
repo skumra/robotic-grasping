@@ -3,8 +3,15 @@ import torch.nn.functional as F
 
 
 class GraspModel(nn.Module):
+    """
+    An abstract model for grasp network in a common format.
+    """
+
     def __init__(self):
         super(GraspModel, self).__init__()
+
+    def forward(self, x_in):
+        raise NotImplementedError()
 
     def compute_loss(self, xc, yc):
         y_pos, y_cos, y_sin, y_width = yc
@@ -42,6 +49,9 @@ class GraspModel(nn.Module):
 
 
 class ResidualBlock(nn.Module):
+    """
+    A residual block with dropout option
+    """
 
     def __init__(self, in_channels, out_channels, kernel_size=3, dropout=False, prob=0.0):
         super(ResidualBlock, self).__init__()
