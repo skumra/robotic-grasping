@@ -1,29 +1,10 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-
-class ResidualBlock(nn.Module):
-
-    def __init__(self, in_channels, out_channels, kernel_size=3, dropout=False, prob=0.0):
-        super(ResidualBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size, padding=1)
-        self.bn1 = nn.BatchNorm2d(in_channels)
-        self.conv2 = nn.Conv2d(in_channels, out_channels, kernel_size, padding=1)
-        self.bn2 = nn.BatchNorm2d(in_channels)
-
-        self.dropout = dropout
-        self.dropout1 = nn.Dropout(p=prob)
-
-    def forward(self, x_in):
-        x = self.bn1(self.conv1(x_in))
-        x = F.relu(x)
-        if self.dropout:
-            x = self.dropout1(x)
-        x = self.bn2(self.conv2(x))
-        return x + x_in
+from inference.models.grasp_model import GraspModel, ResidualBlock
 
 
-class GenerativeResnet(nn.Module):
+class GenerativeResnet(GraspModel):
 
     def __init__(self, input_channels=4, output_channels=1, channel_size=32, dropout=False, prob=0.0):
         super(GenerativeResnet, self).__init__()
@@ -92,37 +73,3 @@ class GenerativeResnet(nn.Module):
             width_output = self.width_output(x)
 
         return pos_output, cos_output, sin_output, width_output
-
-    def compute_loss(self, xc, yc):
-        y_pos, y_cos, y_sin, y_width = yc
-        pos_pred, cos_pred, sin_pred, width_pred = self(xc)
-
-        p_loss = F.smooth_l1_loss(pos_pred, y_pos)
-        cos_loss = F.smooth_l1_loss(cos_pred, y_cos)
-        sin_loss = F.smooth_l1_loss(sin_pred, y_sin)
-        width_loss = F.smooth_l1_loss(width_pred, y_width)
-
-        return {
-            'loss': p_loss + cos_loss + sin_loss + width_loss,
-            'losses': {
-                'p_loss': p_loss,
-                'cos_loss': cos_loss,
-                'sin_loss': sin_loss,
-                'width_loss': width_loss
-            },
-            'pred': {
-                'pos': pos_pred,
-                'cos': cos_pred,
-                'sin': sin_pred,
-                'width': width_pred
-            }
-        }
-
-    def predict(self, xc):
-        pos_pred, cos_pred, sin_pred, width_pred = self(xc)
-        return {
-            'pos': pos_pred,
-            'cos': cos_pred,
-            'sin': sin_pred,
-            'width': width_pred
-        }

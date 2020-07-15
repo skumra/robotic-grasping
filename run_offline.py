@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate network')
-    parser.add_argument('--network', type=str, default='cornell_rgbd_iou_0.95',
+    parser.add_argument('--network', type=str,
                         help='Path to saved network to evaluate')
     parser.add_argument('--rgb_path', type=str, default='cornell/08/pcd0845r.png',
                         help='RGB Image path')
