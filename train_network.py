@@ -45,8 +45,8 @@ def parse_args():
                         help='Path to dataset')
     parser.add_argument('--split', type=float, default=0.9,
                         help='Fraction of data for training (remainder is validation)')
-    parser.add_argument('--ds-shuffle', action='store_true', default=True,
-                        help='Shuffle the dataset')
+    parser.add_argument('--ds-shuffle', type=int, default=0,
+                        help='Shuffle the dataset (0/1)')
     parser.add_argument('--ds-rotate', type=float, default=0.0,
                         help='Shift the start point of the dataset to use a different test/train split')
     parser.add_argument('--num-workers', type=int, default=8,
