@@ -45,8 +45,8 @@ def parse_args():
                         help='Path to dataset')
     parser.add_argument('--split', type=float, default=0.9,
                         help='Fraction of data for training (remainder is validation)')
-    parser.add_argument('--ds-shuffle', type=int, default=0,
-                        help='Shuffle the dataset (0/1)')
+    parser.add_argument('--ds-shuffle', action='store_true', default=False,
+                        help='Shuffle the dataset')
     parser.add_argument('--ds-rotate', type=float, default=0.0,
                         help='Shift the start point of the dataset to use a different test/train split')
     parser.add_argument('--num-workers', type=int, default=8,
@@ -55,7 +55,7 @@ def parse_args():
     # Training
     parser.add_argument('--batch-size', type=int, default=8,
                         help='Batch size')
-    parser.add_argument('--epochs', type=int, default=50,
+    parser.add_argument('--epochs', type=int, default=30,
                         help='Training epochs')
     parser.add_argument('--batches-per-epoch', type=int, default=1000,
                         help='Batches per Epoch')
