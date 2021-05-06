@@ -37,6 +37,8 @@ def parse_args():
                         help='Dropout prob for training (0-1)')
     parser.add_argument('--channel-size', type=int, default=32,
                         help='Internal channel size for the network')
+    parser.add_argument('--iou-threshold', type=float, default=0.25,
+                        help='Threshold for IOU matching')
 
     # Datasets
     parser.add_argument('--dataset', type=str,
@@ -78,12 +80,13 @@ def parse_args():
     return args
 
 
-def validate(net, device, val_data):
+def validate(net, device, val_data, iou_threshold):
     """
     Run validation.
     :param net: Network
     :param device: Torch device
     :param val_data: Validation Dataset
+    :param iou_threshold: IoU threshold
     :return: Successes, Failures and Losses
     """
     net.eval()
@@ -121,6 +124,7 @@ def validate(net, device, val_data):
                                                val_data.dataset.get_gtbb(didx, rot, zoom_factor),
                                                no_grasps=1,
                                                grasp_width=w_out,
+                                               threshold=iou_threshold
                                                )
 
             if s:
@@ -317,7 +321,7 @@ def run():
 
         # Run Validation
         logging.info('Validating...')
-        test_results = validate(net, device, val_data)
+        test_results = validate(net, device, val_data, args.iou_threshold)
         logging.info('%d/%d = %f' % (test_results['correct'], test_results['correct'] + test_results['failed'],
                                      test_results['correct'] / (test_results['correct'] + test_results['failed'])))
 
