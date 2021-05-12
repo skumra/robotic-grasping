@@ -27,6 +27,8 @@ def parse_args():
     # Network
     parser.add_argument('--network', type=str, default='grconvnet3',
                         help='Network name in inference/models')
+    parser.add_argument('--input-size', type=int, default=224,
+                        help='Input image size for the network')
     parser.add_argument('--use-depth', type=int, default=1,
                         help='Use Depth image for training (1/0)')
     parser.add_argument('--use-rgb', type=int, default=1,
@@ -57,7 +59,7 @@ def parse_args():
     # Training
     parser.add_argument('--batch-size', type=int, default=8,
                         help='Batch size')
-    parser.add_argument('--epochs', type=int, default=30,
+    parser.add_argument('--epochs', type=int, default=50,
                         help='Training epochs')
     parser.add_argument('--batches-per-epoch', type=int, default=1000,
                         help='Batches per Epoch')
@@ -245,6 +247,7 @@ def run():
     logging.info('Loading {} Dataset...'.format(args.dataset.title()))
     Dataset = get_dataset(args.dataset)
     dataset = Dataset(args.dataset_path,
+                      output_size=args.input_size,
                       ds_rotate=args.ds_rotate,
                       random_rotate=True,
                       random_zoom=True,
@@ -302,10 +305,10 @@ def run():
         raise NotImplementedError('Optimizer {} is not implemented'.format(args.optim))
 
     # Print model architecture.
-    summary(net, (input_channels, 224, 224))
+    summary(net, (input_channels, args.input_size, args.input_size))
     f = open(os.path.join(save_folder, 'arch.txt'), 'w')
     sys.stdout = f
-    summary(net, (input_channels, 224, 224))
+    summary(net, (input_channels, args.input_size, args.input_size))
     sys.stdout = sys.__stdout__
     f.close()
 
