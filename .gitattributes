@@ -1,3 +1,6 @@
+.92 filter=lfs diff=lfs merge=lfs -text
+.93 filter=lfs diff=lfs merge=lfs -text
+.94 filter=lfs diff=lfs merge=lfs -text
 .96 filter=lfs diff=lfs merge=lfs -text
 .97 filter=lfs diff=lfs merge=lfs -text
 .98 filter=lfs diff=lfs merge=lfs -text

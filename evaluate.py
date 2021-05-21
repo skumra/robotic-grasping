@@ -20,6 +20,8 @@ def parse_args():
     # Network
     parser.add_argument('--network', metavar='N', type=str, nargs='+',
                         help='Path to saved networks to evaluate')
+    parser.add_argument('--input-size', type=int, default=224,
+                        help='Input image size for the network')
 
     # Dataset
     parser.add_argument('--dataset', type=str,
@@ -79,6 +81,7 @@ if __name__ == '__main__':
     logging.info('Loading {} Dataset...'.format(args.dataset.title()))
     Dataset = get_dataset(args.dataset)
     test_dataset = Dataset(args.dataset_path,
+                           output_size=args.input_size,
                            ds_rotate=args.ds_rotate,
                            random_rotate=args.augment,
                            random_zoom=args.augment,

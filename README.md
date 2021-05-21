@@ -14,12 +14,13 @@ Sulabh Kumra, Shirin Joshi, Ferat Sahin
 If you use this project in your research or wish to refer to the baseline results published in the paper, please use the following BibTeX entry:
 
 ```
-@inproceedings{kumra2019antipodal,
-  title={Antipodal Robotic Grasping using Generative Residual Convolutional Neural Network},
+@inproceedings{kumra2020antipodal,
   author={Kumra, Sulabh and Joshi, Shirin and Sahin, Ferat},
-  booktitle={2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  booktitle={2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
+  title={Antipodal Robotic Grasping using Generative Residual Convolutional Neural Network}, 
   year={2020},
-  organization={IEEE}
+  pages={9626-9633},
+  doi={10.1109/IROS45743.2020.9340777}}
 }
 ```
 
@@ -78,20 +79,32 @@ This repository supports both the [Cornell Grasping Dataset](http://pr.cs.cornel
 
 A model can be trained using the `train_network.py` script.  Run `train_network.py --help` to see a full list of options.
 
-For example:
+Example for Cornell dataset:
 
 ```bash
 python train_network.py --dataset cornell --dataset-path <Path To Dataset> --description training_cornell
+```
+
+Example for Jacquard dataset:
+
+```bash
+python train_network.py --dataset jacquard --dataset-path <Path To Dataset> --description training_jacquard --use-dropout 0 --input-size 300
 ```
 
 ## Model Evaluation
 
 The trained network can be evaluated using the `evaluate.py` script.  Run `evaluate.py --help` for a full set of options.
 
-For example:
+Example for Cornell dataset:
 
 ```bash
 python evaluate.py --network <Path to Trained Network> --dataset cornell --dataset-path <Path to Dataset> --iou-eval
+```
+
+Example for Jacquard dataset:
+
+```bash
+python evaluate.py --network <Path to Trained Network> --dataset jacquard --dataset-path <Path to Dataset> --iou-eval --use-dropout 0 --input-size 300
 ```
 
 ## Run Tasks
