@@ -30,7 +30,7 @@ class Calibration:
         self.measured_pts = []
         self.observed_pts = []
         self.observed_pix = []
-        self.world2camera = np.eye(4)
+        self.camera2world = np.eye(4)
 
         homedir = os.path.join(os.path.expanduser('~'), "grasp-comms")
         self.move_completed = os.path.join(homedir, "move_completed.npy")
@@ -72,16 +72,16 @@ class Calibration:
 
         new_observed_pts = np.asarray([observed_x, observed_y, observed_z]).T
 
-        # Estimate rigid transform between measured points and new observed points
-        R, t = self._get_rigid_transform(np.asarray(self.measured_pts), np.asarray(new_observed_pts))
+        # Estimate rigid transform between new observed points and measured points
+        R, t = self._get_rigid_transform(np.asarray(new_observed_pts), np.asarray(self.measured_pts))
         t.shape = (3, 1)
-        self.world2camera = np.concatenate((np.concatenate((R, t), axis=1), np.array([[0, 0, 0, 1]])), axis=0)
+        self.camera2world = np.concatenate((np.concatenate((R, t), axis=1), np.array([[0, 0, 0, 1]])), axis=0)
 
         # Compute rigid transform error
-        registered_pts = np.dot(R, np.transpose(self.measured_pts)) + np.tile(t, (1, self.measured_pts.shape[0]))
-        error = np.transpose(registered_pts) - new_observed_pts
+        registered_pts = np.dot(R, np.transpose(new_observed_pts)) + np.tile(t, (1, new_observed_pts.shape[0]))
+        error = np.transpose(registered_pts) - self.measured_pts
         error = np.sum(np.multiply(error, error))
-        rmse = np.sqrt(error / self.measured_pts.shape[0])
+        rmse = np.sqrt(error / new_observed_pts.shape[0])
         return rmse
 
     def _generate_grid(self):
@@ -181,6 +181,5 @@ class Calibration:
         np.savetxt('saved_data/camera_depth_scale.txt', camera_depth_offset, delimiter=' ')
         rmse = self._get_rigid_transform_error(camera_depth_offset)
         logging.info('RMSE: ', rmse)
-        camera_pose = np.linalg.inv(self.world2camera)
-        np.savetxt('saved_data/camera_pose.txt', camera_pose, delimiter=' ')
+        np.savetxt('saved_data/camera_pose.txt', self.camera2world, delimiter=' ')
         logging.info('Done.')
