@@ -12,6 +12,7 @@ import torch
 import torch.optim as optim
 import torch.utils.data
 from torchsummary import summary
+import torch.optim.lr_scheduler
 
 from hardware.device import get_device
 from inference.models import get_network
@@ -65,6 +66,8 @@ def parse_args():
                         help='Batches per Epoch')
     parser.add_argument('--optim', type=str, default='adam',
                         help='Optmizer for the training. (adam or SGD)')
+    parser.add_argument('--lr-decay', action='store_true',
+                        help='Use learning rate decay')
 
     # Logging etc.
     parser.add_argument('--description', type=str, default='',
@@ -304,6 +307,9 @@ def run():
     else:
         raise NotImplementedError('Optimizer {} is not implemented'.format(args.optim))
 
+    if args.lr_decay:
+        scheduler = lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
+
     # Print model architecture.
     summary(net, (input_channels, args.input_size, args.input_size))
     f = open(os.path.join(save_folder, 'arch.txt'), 'w')
@@ -316,6 +322,9 @@ def run():
     for epoch in range(args.epochs):
         logging.info('Beginning Epoch {:02d}'.format(epoch))
         train_results = train(epoch, net, device, train_data, optimizer, args.batches_per_epoch, vis=args.vis)
+        if args.lr_decay:
+            # Decay Learning Rate
+            scheduler.step()
 
         # Log training losses to tensorboard
         tb.add_scalar('loss/train_loss', train_results['loss'], epoch)
