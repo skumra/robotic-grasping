@@ -62,12 +62,12 @@ $ pip install -r requirements.txt
 
 ## Datasets
 
-This repository supports both the [Cornell Grasping Dataset](http://pr.cs.cornell.edu/grasping/rect_data/data.php) and
+This repository supports both the [Cornell Grasping Dataset](https://www.kaggle.com/oneoneliu/cornell-grasp) and
 [Jacquard Dataset](https://jacquard.liris.cnrs.fr/).
 
 #### Cornell Grasping Dataset
 
-1. Download the and extract [Cornell Grasping Dataset](http://pr.cs.cornell.edu/grasping/rect_data/data.php). 
+1. Download the and extract [Cornell Grasping Dataset](https://www.kaggle.com/oneoneliu/cornell-grasp). 
 2. Convert the PCD files to depth images by running `python -m utils.dataset_processing.generate_cornell_depth <Path To Dataset>`
 
 #### Jacquard Dataset
